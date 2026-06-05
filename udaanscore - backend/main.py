@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from routes import score
 
 app = FastAPI(title="UdaanScore API")
 
@@ -9,6 +10,9 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Register the score route
+app.include_router(score.router, prefix="/score")
 
 @app.get("/")
 def home():
