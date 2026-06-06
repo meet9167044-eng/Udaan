@@ -1,5 +1,26 @@
 import random
 
+RAJU_PROFILE = {
+    "id": 0,
+    "name": "Raju Sharma",
+    "age": 28,
+    "occupation": "Kirana Store Owner",
+    "city": "Mumbai",
+    "trust_score": 623,
+    "risk_band": "Medium Risk",
+    "loan_limit": 15000,
+    "confidence": "Medium",
+    "bills_score": 60.0,
+    "upi_score": 72.0,
+    "cashflow_score": 65.0,
+    "savings_score": 55.0,
+    "location_score": 80.0,
+    "quiz_score": 58.0,
+    "nano_loan_stage": 2,
+    "total_loans_repaid": 1,
+    "monthly_income": 18000
+}
+
 INDIAN_NAMES = [
     "Raju Sharma", "Priya Patel", "Arjun Mehta", "Sunita Verma",
     "Vikram Singh", "Kavitha Nair", "Mohan Das", "Anjali Gupta",
@@ -106,4 +127,4 @@ def generate_borrowers():
     return borrowers
 
 # Generate once when the server starts
-BORROWERS_DB = generate_borrowers()
+BORROWERS_DB = [RAJU_PROFILE] + generate_borrowers()
