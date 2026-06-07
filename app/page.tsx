@@ -2,6 +2,7 @@
 
 import { Fragment, useEffect, useRef, useState } from "react";
 import Link from "next/link";
+import RajuStory from "@/components/RajuStory";
 
 /* ── Feature card data ───────────────────────────────────── */
 const features = [
@@ -316,6 +317,9 @@ export default function LandingPage() {
           </div>
         </div>
       </section>
+
+      {/* ── The Raju Story ────────────────────────────────── */}
+      <RajuStory />
 
       {/* ── Features ──────────────────────────────────────── */}
       <section className="section-spacing" data-reveal>

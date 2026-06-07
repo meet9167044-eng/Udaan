@@ -29,6 +29,8 @@
   --animate-fade-in: fadeIn 0.8s ease-out forwards;
   --animate-slide-up: slideUp 0.6s ease-out forwards;
   --animate-pan-grid: panGrid 40s linear infinite;
+  --animate-ladder-pulse: ladderPulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  --animate-story-step: storyStep 0.5s ease-out forwards;
 
   @keyframes float {
 
@@ -94,6 +96,16 @@
     100% {
       transform: translateY(60px)
     }
+  }
+
+  @keyframes ladderPulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.8; transform: scale(1.02); }
+  }
+
+  @keyframes storyStep {
+    0% { opacity: 0; transform: scale(0.95) translateY(10px); }
+    100% { opacity: 1; transform: scale(1) translateY(0); }
   }
 }
 
