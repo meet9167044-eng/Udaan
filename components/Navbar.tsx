@@ -3,19 +3,36 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useAuth } from "@/components/AuthContext";
 
-const navLinks = [
-  { href: "/",          label: "Home" },
+const defaultLinks = [
+  { href: "/", label: "Home" },
+  { href: "/auth/login", label: "Sign In" },
+];
+
+const borrowerLinks = [
+  { href: "/", label: "Home" },
   { href: "/dashboard", label: "Dashboard" },
-  { href: "/journey",   label: "Journey" },
+  { href: "/journey", label: "Journey" },
   { href: "/simulator", label: "Simulator" },
-  { href: "/consent",   label: "Consent Vault" },
+  { href: "/consent", label: "Consent Vault" },
+];
+
+const lenderLinks = [
+  { href: "/", label: "Home" },
+  { href: "/lender", label: "Lender Dashboard" },
+];
+
+const adminLinks = [
+  { href: "/", label: "Home" },
+  { href: "/admin", label: "Admin Panel" },
 ];
 
 export default function Navbar() {
   const pathname = usePathname();
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const { user, logout } = useAuth();
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20);
@@ -47,37 +64,61 @@ export default function Navbar() {
           </Link>
 
           <div className="hidden lg:flex items-center gap-2">
-            {navLinks.map((link) => {
-              const isActive = pathname === link.href;
-              return (
-                <Link
-                  key={link.href}
-                  href={link.href}
-                  className={`relative px-4 py-2 text-sm font-medium transition-all duration-300 rounded-full group ${
-                    isActive
-                      ? "text-white"
-                      : "text-slate-400/70 hover:text-white"
-                  }`}
-                >
-                  {isActive && (
-                    <span className="absolute inset-0 bg-primary-500/20 border border-primary-400/30 rounded-full shadow-[0_0_16px_rgba(59,150,242,0.3)] -z-10" />
-                  )}
-                  {!isActive && (
-                    <span className="absolute inset-0 bg-white/[0.04] rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300 -z-10 scale-95 group-hover:scale-100" />
-                  )}
-                  <span className="relative z-10">{link.label}</span>
-                </Link>
-              );
-            })}
+            {(() => {
+              const links = user
+                ? user.role === "borrower"
+                  ? borrowerLinks
+                  : user.role === "lender"
+                    ? lenderLinks
+                    : adminLinks
+                : defaultLinks;
+
+              return links.map((link) => {
+                const isActive = pathname === link.href;
+                return (
+                  <Link
+                    key={link.href}
+                    href={link.href}
+                    className={`relative px-4 py-2 text-sm font-medium transition-all duration-300 rounded-full group ${
+                      isActive
+                        ? "text-white"
+                        : "text-slate-400/70 hover:text-white"
+                    }`}
+                  >
+                    {isActive && (
+                      <span className="absolute inset-0 bg-primary-500/20 border border-primary-400/30 rounded-full shadow-[0_0_16px_rgba(59,150,242,0.3)] -z-10" />
+                    )}
+                    {!isActive && (
+                      <span className="absolute inset-0 bg-white/[0.04] rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300 -z-10 scale-95 group-hover:scale-100" />
+                    )}
+                    <span className="relative z-10">{link.label}</span>
+                  </Link>
+                );
+              });
+            })()}
           </div>
 
           <div className="hidden lg:flex items-center gap-3">
-            <Link href="/dashboard" className="btn-outline text-sm !py-2.5 !px-4">
-              Sign In
-            </Link>
-            <Link href="/dashboard" className="btn-primary text-sm !py-2.5 !px-5">
-              Get Started
-            </Link>
+            {user ? (
+              <>
+                <span className="rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm text-slate-200">{user.role.toUpperCase()}</span>
+                <Link href="/auth/login" className="btn-outline text-sm !py-2.5 !px-4">
+                  Switch Role
+                </Link>
+                <button onClick={() => logout()} className="btn-primary text-sm !py-2.5 !px-5">
+                  Sign Out
+                </button>
+              </>
+            ) : (
+              <>
+                <Link href="/auth/login" className="btn-outline text-sm !py-2.5 !px-4">
+                  Sign In
+                </Link>
+                <Link href="/auth/login" className="btn-primary text-sm !py-2.5 !px-5">
+                  Get Started
+                </Link>
+              </>
+            )}
           </div>
 
           <button
@@ -101,30 +142,53 @@ export default function Navbar() {
         } border-t border-white/[0.06] bg-[#080c18]/95 backdrop-blur-xl`}
       >
         <div className="page-container !pt-4 !pb-6 space-y-2">
-          {navLinks.map((link) => {
-            const isActive = pathname === link.href;
-            return (
-              <Link
-                key={link.href}
-                href={link.href}
-                onClick={() => setMenuOpen(false)}
-                className={`block px-4 py-3.5 rounded-xl text-sm font-medium transition-all duration-300 ${
-                  isActive
-                    ? "text-white bg-primary-500/15 border border-primary-500/20 shadow-[inset_0_0_20px_rgba(59,150,242,0.15)]"
-                    : "text-slate-400/70 hover:text-white hover:bg-white/[0.04]"
-                }`}
-              >
-                {link.label}
-              </Link>
-            );
-          })}
+          {(() => {
+            const links = user
+              ? user.role === "borrower"
+                ? borrowerLinks
+                : user.role === "lender"
+                  ? lenderLinks
+                  : adminLinks
+              : defaultLinks;
+
+            return links.map((link) => {
+              const isActive = pathname === link.href;
+              return (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  onClick={() => setMenuOpen(false)}
+                  className={`block px-4 py-3.5 rounded-xl text-sm font-medium transition-all duration-300 ${
+                    isActive
+                      ? "text-white bg-primary-500/15 border border-primary-500/20 shadow-[inset_0_0_20px_rgba(59,150,242,0.15)]"
+                      : "text-slate-400/70 hover:text-white hover:bg-white/[0.04]"
+                  }`}
+                >
+                  {link.label}
+                </Link>
+              );
+            });
+          })()}
           <div className="pt-4 flex flex-col gap-3">
-            <Link href="/dashboard" className="btn-outline text-sm text-center" onClick={() => setMenuOpen(false)}>
-              Sign In
-            </Link>
-            <Link href="/dashboard" className="btn-primary text-sm text-center" onClick={() => setMenuOpen(false)}>
-              Get Started
-            </Link>
+            {user ? (
+              <>
+                <Link href="/auth/login" className="btn-outline text-sm text-center" onClick={() => setMenuOpen(false)}>
+                  Switch Role
+                </Link>
+                <button onClick={() => { setMenuOpen(false); logout(); }} className="btn-primary text-sm text-center w-full">
+                  Sign Out
+                </button>
+              </>
+            ) : (
+              <>
+                <Link href="/auth/login" className="btn-outline text-sm text-center" onClick={() => setMenuOpen(false)}>
+                  Sign In
+                </Link>
+                <Link href="/auth/login" className="btn-primary text-sm text-center" onClick={() => setMenuOpen(false)}>
+                  Get Started
+                </Link>
+              </>
+            )}
           </div>
         </div>
       </div>

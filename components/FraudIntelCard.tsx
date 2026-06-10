@@ -1,5 +1,6 @@
 "use client";
 
+import { useAuth } from "@/components/AuthContext";
 import { useEffect, useState } from "react";
 import { getFraudCheck, type FraudResult } from "@/lib/api";
 
@@ -9,7 +10,7 @@ interface FraudIntelCardProps {
 
 /* ── Static fallback (when backend is offline) ─────────────── */
 const STATIC_RESULT: FraudResult = {
-  borrower_name: "Rahul Mehta",
+  borrower_name: "Borrower",
   fraud_score: 0,
   risk_level: "Clean Profile",
   badge_color: "green",
@@ -33,18 +34,20 @@ const riskConfig = {
   "High Fraud Risk":      { color: "#ef4444", label: "High Risk",ring: "border-red-500/30",    glow: "shadow-red-500/10"    },
 };
 
-export default function FraudIntelCard({ borrowerName = "Rahul Mehta" }: FraudIntelCardProps) {
+export default function FraudIntelCard({ borrowerName = "Borrower" }: FraudIntelCardProps) {
+  const { user } = useAuth();
+  const effectiveName = borrowerName ?? user?.borrowerName ?? "Borrower";
   const [data, setData]       = useState<FraudResult | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     let cancelled = false;
-    getFraudCheck(borrowerName)
+    getFraudCheck(effectiveName)
       .then((r) => { if (!cancelled) setData(r); })
       .catch(() => { if (!cancelled) setData(STATIC_RESULT); })
       .finally(() => { if (!cancelled) setLoading(false); });
     return () => { cancelled = true; };
-  }, [borrowerName]);
+  }, [effectiveName]);
 
   const result = data ?? STATIC_RESULT;
   const cfg = riskConfig[result.risk_level as keyof typeof riskConfig] ?? riskConfig["Clean Profile"];

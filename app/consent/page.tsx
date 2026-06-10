@@ -1,5 +1,7 @@
 "use client";
 
+import AuthGuard from "@/components/AuthGuard";
+import { useAuth } from "@/components/AuthContext";
 import ConsentCard from "@/components/ConsentCard";
 
 /* ── Data sources ────────────────────────────────────────── */
@@ -71,7 +73,12 @@ const typeConfig = {
 };
 
 export default function ConsentVaultPage() {
+  const { user } = useAuth();
   const activeCount = dataSources.filter((d) => d.status === "active").length;
+
+  if (!user || user.role !== "borrower") {
+    return <AuthGuard requiredRole="borrower"></AuthGuard>;
+  }
 
   return (
     <div className="page-body" style={{ background: "radial-gradient(ellipse 80% 40% at 50% 0%, #12102a 0%, #080c18 55%)" }}>

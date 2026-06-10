@@ -3,6 +3,8 @@
 import { useState, useMemo, useEffect, useRef } from "react";
 import ScoreGauge from "@/components/ScoreGauge";
 import Link from "next/link";
+import AuthGuard from "@/components/AuthGuard";
+import { useAuth } from "@/components/AuthContext";
 import { calculateServerScore, type ScoreResult } from "@/lib/api";
 
 /* ── Factor definition ───────────────────────────────────── */
@@ -141,13 +143,16 @@ function MetricTile({ label, value, sub, color, change }: { label: string; value
 }
 
 export default function SimulatorPage() {
+  const { user } = useAuth();
   const [values, setValues]         = useState<Record<string, number>>(defaults);
   const [baseline]                  = useState(() => calcTrustScore(defaults));
   const [serverResult, setServerResult] = useState<ScoreResult | null>(null);
   const [serverLoading, setServerLoading] = useState(false);
   const [serverError, setServerError]     = useState<string | null>(null);
   const [autoMode, setAutoMode]     = useState(false);
-  const debounceRef                 = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // ── All hooks must run unconditionally (Rules of Hooks) ──────────
+  const debounceRef    = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const futureScore      = useMemo(() => calcTrustScore(values), [values]);
   const delta            = futureScore - baseline;
@@ -208,7 +213,11 @@ export default function SimulatorPage() {
   ];
 
   return (
-    <div className="page-body" style={{ background: "radial-gradient(ellipse 80% 40% at 50% 0%, #0f1a30 0%, #080c18 55%)" }}>
+    // AuthGuard wraps the whole page — it handles auth/role checking internally.
+    // When user is not logged in or wrong role, it shows an access-denied screen.
+    // When auth passes, it renders {children} — i.e. the simulator page below.
+    <AuthGuard requiredRole="borrower">
+      <div className="page-body" style={{ background: "radial-gradient(ellipse 80% 40% at 50% 0%, #0f1a30 0%, #080c18 55%)" }}>
       <div className="page-container pt-8 md:pt-12">
         <div className="text-center mb-10 max-w-2xl mx-auto animate-fade-in">
           <p className="section-label">Trust Score Simulator</p>
@@ -516,6 +525,7 @@ export default function SimulatorPage() {
           </div>
         </div>
       </div>
-    </div>
+      </div>
+    </AuthGuard>
   );
 }

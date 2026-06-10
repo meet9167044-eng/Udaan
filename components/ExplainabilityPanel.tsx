@@ -1,5 +1,6 @@
 "use client";
 
+import { useAuth } from "@/components/AuthContext";
 import { useEffect, useState } from "react";
 import { getExplanation, type ExplainResult } from "@/lib/api";
 
@@ -8,7 +9,7 @@ interface ExplainabilityPanelProps {
 }
 
 const STATIC: ExplainResult = {
-  borrower_name: "Rahul Mehta",
+  borrower_name: "Borrower",
   trust_score: 742,
   verdict: "Good — Reliable borrower with minor risks",
   verdict_emoji: "🟡",
@@ -47,19 +48,21 @@ const FACTOR_ICONS: Record<string, string> = {
   "Assessment":         "🧠",
 };
 
-export default function ExplainabilityPanel({ borrowerName = "Rahul Mehta" }: ExplainabilityPanelProps) {
+export default function ExplainabilityPanel({ borrowerName = "Borrower" }: ExplainabilityPanelProps) {
+  const { user } = useAuth();
+  const effectiveName = borrowerName ?? user?.borrowerName ?? "Borrower";
   const [data, setData]       = useState<ExplainResult | null>(null);
   const [loading, setLoading] = useState(true);
   const [tab, setTab]         = useState<"factors" | "breakdown">("factors");
 
   useEffect(() => {
     let cancelled = false;
-    getExplanation(borrowerName)
+    getExplanation(effectiveName)
       .then((r) => { if (!cancelled) setData(r); })
       .catch(() => { if (!cancelled) setData(STATIC); })
       .finally(() => { if (!cancelled) setLoading(false); });
     return () => { cancelled = true; };
-  }, [borrowerName]);
+  }, [effectiveName]);
 
   const result = data ?? STATIC;
 

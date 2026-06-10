@@ -5,10 +5,12 @@ import ScoreGauge from "@/components/ScoreGauge";
 import CreditFactorCard from "@/components/CreditFactorCard";
 import FraudIntelCard from "@/components/FraudIntelCard";
 import ExplainabilityPanel from "@/components/ExplainabilityPanel";
+import AuthGuard from "@/components/AuthGuard";
+import { useAuth } from "@/components/AuthContext";
 import Link from "next/link";
 import { getBorrower, type BorrowerProfile } from "@/lib/api";
 
-const BORROWER_NAME = "Raju Sharma";
+const DEFAULT_BORROWER_NAME = "Borrower";
 
 const monthlyTrend = [42, 55, 48, 62, 58, 74];
 
@@ -30,15 +32,23 @@ export default function DashboardPage() {
   const [activeTab, setActiveTab] = useState<"overview" | "factors" | "offers">("overview");
   const [profile, setProfile] = useState<BorrowerProfile | null>(null);
   const [loading, setLoading] = useState(true);
+  const { user } = useAuth();
+  const borrowerName = user?.borrowerName ?? DEFAULT_BORROWER_NAME;
 
   useEffect(() => {
+    if (!user) return;
     let active = true;
-    getBorrower(BORROWER_NAME)
+    setLoading(true);
+    getBorrower(borrowerName)
       .then((res) => { if (active) setProfile(res); })
       .catch(console.error)
       .finally(() => { if (active) setLoading(false); });
     return () => { active = false; };
-  }, []);
+  }, [user, borrowerName]);
+
+  if (!user || user.role !== "borrower") {
+    return <AuthGuard requiredRole="borrower"></AuthGuard>;
+  }
 
   if (loading) {
     return (
@@ -108,7 +118,7 @@ export default function DashboardPage() {
         <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-6 mb-12">
           <div>
             <p className="section-label">Trust Dashboard</p>
-            <h1 className="heading-page text-white mt-1">{BORROWER_NAME}</h1>
+            <h1 className="heading-page text-white mt-1">{profile?.name ?? borrowerName}</h1>
             <p className="text-caption mt-3">Location: {profile.city} · Income: ₹{(profile.monthly_income).toLocaleString()}/mo</p>
           </div>
           <div className="flex flex-wrap gap-3">
@@ -201,15 +211,15 @@ export default function DashboardPage() {
             </div>
 
             {/* Fraud Intelligence */}
-            <FraudIntelCard borrowerName={BORROWER_NAME} />
+            <FraudIntelCard borrowerName={borrowerName} />
           </div>
 
-          {/* ── Right column ─────────────────────────────────── */}
+          {/* ── Right column ──────────────────────────────────── */}
           <div className="lg:col-span-2 stack-xl">
 
             {/* Explainability Panel (replaces 3-bullet AI insights) */}
             {activeTab === "overview" && (
-              <ExplainabilityPanel borrowerName={BORROWER_NAME} />
+              <ExplainabilityPanel borrowerName={borrowerName} />
             )}
 
             {/* Trust Factors */}

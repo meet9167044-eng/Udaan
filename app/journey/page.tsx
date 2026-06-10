@@ -2,12 +2,13 @@
 
 import { useMemo, useState } from "react";
 import Link from "next/link";
+import AuthGuard from "@/components/AuthGuard";
+import { useAuth } from "@/components/AuthContext";
 import ScoreGauge from "@/components/ScoreGauge";
 import NanoLoanLadder from "@/components/NanoLoanLadder";
 import PsychometricModal from "@/components/PsychometricModal";
 
-const BORROWER_NAME = "Raju Sharma";
-const BASE_SCORE    = 623;
+const BASE_SCORE = 623;
 
 type TaskStatus = "completed" | "in_progress" | "pending";
 
@@ -86,6 +87,7 @@ function statusLabel(status: TaskStatus) {
 }
 
 export default function JourneyPage() {
+  const { user } = useAuth();
   const [tasks, setTasks]               = useState(roadmapTasks);
   const [showPsycho, setShowPsycho]     = useState(false);
   const [rajuMode, setRajuMode]         = useState(true);
@@ -108,6 +110,12 @@ export default function JourneyPage() {
 
   const remainingBoost  = totalPotentialBoost - earnedBoost;
   const projectedScore  = currentScore + totalPotentialBoost;
+
+  if (!user || user.role !== "borrower") {
+    return <AuthGuard requiredRole="borrower"></AuthGuard>;
+  }
+
+  const borrowerName = user.borrowerName ?? "Borrower";
 
   const toggleTaskProgress = (id: string, isPsychometric?: boolean) => {
     if (isPsychometric) {
@@ -159,7 +167,7 @@ export default function JourneyPage() {
             </p>
           </div>
           <div className="flex gap-3 flex-wrap">
-            {/* Raju mode toggle */}
+            {/* Borrower view toggle */}
             <button
               onClick={() => setRajuMode(!rajuMode)}
               className={`text-sm py-2 px-4 rounded-xl border font-medium transition-all duration-300 ${
@@ -168,7 +176,7 @@ export default function JourneyPage() {
                   : "border-white/10 bg-white/[0.02] text-slate-400 hover:text-white"
               }`}
             >
-              {rajuMode ? "👤 Raju's View" : "Switch to Raju"}
+              {rajuMode ? `👤 ${borrowerName}'s View` : `Switch to ${borrowerName}`}
             </button>
             <Link href="/simulator" className="btn-outline text-sm py-2 px-4">
               Simulate Impact
@@ -185,7 +193,7 @@ export default function JourneyPage() {
             {/* Score gauge */}
             <div className="glass-card glass-card-static flex flex-col items-center">
               <p className="text-caption uppercase tracking-widest mb-4 w-full text-center">
-                {rajuMode ? "Raju's Trust Score" : "Current Trust Score"}
+                {rajuMode ? `${borrowerName}'s Trust Score` : "Current Trust Score"}
               </p>
               {rajuMode && (
                 <div className="mb-3 px-3 py-1.5 rounded-full bg-amber-500/10 border border-amber-500/30">
@@ -237,7 +245,7 @@ export default function JourneyPage() {
             </div>
 
             {/* Nano Loan Ladder (replaces old Loan Unlock Levels) */}
-            <NanoLoanLadder borrowerName={BORROWER_NAME} />
+            <NanoLoanLadder borrowerName={borrowerName} />
           </div>
 
           {/* ── Right column ─────────────────────────────── */}

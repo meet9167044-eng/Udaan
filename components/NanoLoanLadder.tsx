@@ -1,5 +1,6 @@
 "use client";
 
+import { useAuth } from "@/components/AuthContext";
 import { useEffect, useState } from "react";
 import { getNanoLadder, repayLoan, type NanoLadderResult, type NanoStage } from "@/lib/api";
 
@@ -13,7 +14,7 @@ const LADDER_ICONS   = ["🌱", "🌿", "🌳", "🚀"];
 const LADDER_COLORS  = ["#22c55e", "#3b96f2", "#8b5cf6", "#f59e0b"];
 
 const STATIC_RESULT: NanoLadderResult = {
-  borrower_name: "Raju Sharma",
+  borrower_name: "Borrower",
   trust_score: 623,
   current_stage: 2,
   current_loan_limit: 5000,
@@ -121,7 +122,9 @@ function StageCard({
   );
 }
 
-export default function NanoLoanLadder({ borrowerName = "Raju Sharma" }: NanoLoanLadderProps) {
+export default function NanoLoanLadder({ borrowerName = "Borrower" }: NanoLoanLadderProps) {
+  const { user } = useAuth();
+  const effectiveName = borrowerName ?? user?.borrowerName ?? "Borrower";
   const [data, setData]         = useState<NanoLadderResult | null>(null);
   const [loading, setLoading]   = useState(true);
   const [repaying, setRepaying] = useState(false);
@@ -129,7 +132,7 @@ export default function NanoLoanLadder({ borrowerName = "Raju Sharma" }: NanoLoa
 
   const fetchLadder = () => {
     setLoading(true);
-    getNanoLadder(borrowerName)
+    getNanoLadder(effectiveName)
       .then(setData)
       .catch(() => setData(STATIC_RESULT))
       .finally(() => setLoading(false));

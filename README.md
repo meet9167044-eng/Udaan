@@ -41,9 +41,9 @@ A modern, AI-powered credit scoring and lending platform with explainable AI, fr
 
 ### Backend
 - **Python 3.x** - Core backend language
-- **Flask** - Web framework (via routes)
-- **Machine Learning** - Credit scoring & fraud detection models
-- **SQLite/PostgreSQL** - Data persistence
+- **FastAPI** - Web framework for API routes
+- **Prototype scoring** - Rule-based credit scoring and fraud logic
+- **In-memory persistence** - Demo data stored in memory for hackathon prototype
 
 ### DevOps
 - **Render** - Cloud deployment (via render.yaml)
@@ -166,27 +166,36 @@ pip freeze > requirements.txt
 ### Backend Routes
 
 #### Borrowers
-- `GET /api/borrowers` - List all borrowers
-- `POST /api/borrowers` - Create new borrower
-- `GET /api/borrowers/<id>` - Get borrower details
-- `PUT /api/borrowers/<id>` - Update borrower
+- `GET /borrowers/` - List all borrowers
+- `GET /borrowers/{name}` - Get borrower profile by name
+- `POST /borrowers/repay-loan` - Record a loan repayment and boost borrower score
 
 #### Scoring
-- `POST /api/score` - Calculate credit score
-- `GET /api/score/<id>` - Get borrower score
-- `POST /api/score/simulate` - Simulate score with different inputs
-
-#### Fraud Detection
-- `POST /api/fraud/check` - Check for fraud indicators
-- `GET /api/fraud/intelligence` - Get fraud intelligence
-
-#### Explainability
-- `POST /api/explain/score` - Get score explanation
-- `POST /api/explain/factors` - Get credit factors breakdown
+- `POST /score/calculate` - Calculate a Trust Score from input signals
 
 #### Features
-- `POST /api/features/generate` - Generate features for borrower
-- `GET /api/features/<id>` - Get borrower features
+- `GET /features/nano-ladder/{borrower_name}` - Get nano loan ladder status for a borrower
+- `GET /features/credit-builder/{borrower_name}` - Get credit builder journey tasks
+- `POST /features/simulate-score` - Simulate score impact from action changes
+
+#### Consent Vault
+- `GET /vault/consent/{borrower_name}` - View borrower consent status
+- `POST /vault/consent/update` - Update consent permissions for a borrower
+- `DELETE /vault/consent/revoke/{borrower_name}` - Revoke all borrower consent
+
+#### Explainability
+- `GET /vault/explain/{borrower_name}` - Explain borrower score details
+
+#### Fraud Detection
+- `GET /vault/fraud-check/{borrower_name}` - Run fraud detection for a borrower
+
+#### Lender Reports
+- `GET /lender/report/{borrower_name}` - Get lender-facing borrower report
+- `GET /lender/eligible-borrowers?min_score=<value>` - Filter eligible borrowers by score threshold
+
+#### Demo
+- `GET /demo/raju-story` - Get the hackathon demo story for the sample borrower
+- `GET /demo/all-endpoints` - Get a live list of all backend endpoints
 
 ## 🌐 Deployment
 

@@ -209,11 +209,11 @@ export default function LandingPage() {
           </p>
 
           <div className="flex flex-col sm:flex-row gap-5 justify-center mb-16 md:mb-20">
-            <Link href="/dashboard" id="hero-cta-primary" className="btn-primary text-lg px-10 py-4 font-bold tracking-tight shadow-[0_0_40px_rgba(37,120,230,0.4)]">
-              Check My Trust Score Free →
+            <Link href="/auth/login" id="hero-cta-primary" className="btn-primary text-lg px-10 py-4 font-bold tracking-tight shadow-[0_0_40px_rgba(37,120,230,0.4)]">
+              Get Started with Login →
             </Link>
-            <Link href="/simulator" id="hero-cta-secondary" className="btn-outline text-lg px-10 py-4 font-bold tracking-tight bg-white/[0.03]">
-              Try the Simulator
+            <Link href="/auth/login" id="hero-cta-secondary" className="btn-outline text-lg px-10 py-4 font-bold tracking-tight bg-white/[0.03]">
+              Explore as role-based user
             </Link>
           </div>
 
