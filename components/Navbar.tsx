@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useAuth } from "@/components/AuthContext";
+import { motion } from "framer-motion";
 
 const defaultLinks = [
   { href: "/", label: "Home" },
@@ -41,8 +42,11 @@ export default function Navbar() {
   }, []);
 
   return (
-    <nav
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+    <motion.nav
+      initial={{ y: -100 }}
+      animate={{ y: 0 }}
+      transition={{ type: "spring", stiffness: 300, damping: 25 }}
+      className={`fixed top-0 left-0 right-0 z-50 transition-colors duration-300 ${
         scrolled
           ? "bg-[#080c18]/85 backdrop-blur-xl border-b border-white/[0.06] shadow-[0_8px_32px_rgba(0,0,0,0.12)]"
           : "bg-transparent"
@@ -79,14 +83,18 @@ export default function Navbar() {
                   <Link
                     key={link.href}
                     href={link.href}
-                    className={`relative px-4 py-2 text-sm font-medium transition-all duration-300 rounded-full group ${
+                    className={`relative px-4 py-2 text-sm font-medium transition-colors duration-300 rounded-full group ${
                       isActive
                         ? "text-white"
                         : "text-slate-400/70 hover:text-white"
                     }`}
                   >
                     {isActive && (
-                      <span className="absolute inset-0 bg-primary-500/20 border border-primary-400/30 rounded-full shadow-[0_0_16px_rgba(59,150,242,0.3)] -z-10" />
+                      <motion.span
+                        layoutId="nav-pill"
+                        className="absolute inset-0 bg-primary-500/20 border border-primary-400/30 rounded-full shadow-[0_0_16px_rgba(59,150,242,0.3)] -z-10"
+                        transition={{ type: "spring", stiffness: 300, damping: 24 }}
+                      />
                     )}
                     {!isActive && (
                       <span className="absolute inset-0 bg-white/[0.04] rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300 -z-10 scale-95 group-hover:scale-100" />
@@ -192,6 +200,6 @@ export default function Navbar() {
           </div>
         </div>
       </div>
-    </nav>
+    </motion.nav>
   );
 }

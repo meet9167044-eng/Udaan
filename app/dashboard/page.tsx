@@ -1,5 +1,5 @@
 "use client";
-
+import { motion, Variants } from "framer-motion";
 import { useState, useEffect } from "react";
 import ScoreGauge from "@/components/ScoreGauge";
 import CreditFactorCard from "@/components/CreditFactorCard";
@@ -47,7 +47,13 @@ export default function DashboardPage() {
   }, [user, borrowerName]);
 
   if (!user || user.role !== "borrower") {
-    return <AuthGuard requiredRole="borrower"></AuthGuard>;
+        return (
+      <AuthGuard requiredRole="borrower">
+        <div className="flex h-screen items-center justify-center text-white">
+          Checking authorization...
+        </div>
+      </AuthGuard>
+    );
   }
 
   if (loading) {
@@ -109,7 +115,18 @@ export default function DashboardPage() {
     { bank: "Nano Capital", type: "Credit Builder Loan", amount: `₹${profile.loan_limit}`, rate: "0%", emi: `₹${Math.round(profile.loan_limit/4)}/mo`, badge: "Unlocked", color: "#22c55e" },
     { bank: "HDFC Bank", type: "Personal Loan", amount: `₹${profile.loan_limit * 5}`, rate: "12.5%", emi: `₹${Math.round((profile.loan_limit*5)/12)}/mo`, badge: "Requires 750 Score", color: "#3b96f2" },
   ];
+    const containerVariants:Variants = {
+    hidden: { opacity: 0 },
+    show: {
+      opacity: 1,
+      transition: { staggerChildren: 0.1 }
+    }
+  };
 
+  const itemVariants:Variants = {
+    hidden: { opacity: 0, y: 20 },
+    show: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 300, damping: 24 } }
+  };
   return (
     <div className="page-body" style={{ background: "radial-gradient(ellipse 80% 40% at 50% 0%, #0f1a30 0%, #080c18 55%)" }}>
       <div className="page-container pt-8 md:pt-12">
@@ -147,10 +164,14 @@ export default function DashboardPage() {
           ))}
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-10">
+        <motion.div 
+          className="grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-10"
+          variants={containerVariants}
+          initial="hidden"
+          animate="show">
 
           {/* ── Left column ──────────────────────────────────── */}
-          <div className="lg:col-span-1 stack-xl">
+          <motion.div className="lg:col-span-1 stack-xl" variants={itemVariants}>
 
             {/* Score card */}
             <div className="glass-card glass-card-static flex flex-col items-center">
@@ -212,10 +233,10 @@ export default function DashboardPage() {
 
             {/* Fraud Intelligence */}
             <FraudIntelCard borrowerName={borrowerName} />
-          </div>
+          </motion.div>
 
           {/* ── Right column ──────────────────────────────────── */}
-          <div className="lg:col-span-2 stack-xl">
+          <motion.div className="lg:col-span-2 stack-xl" variants={itemVariants}>
 
             {/* Explainability Panel (replaces 3-bullet AI insights) */}
             {activeTab === "overview" && (
@@ -307,8 +328,8 @@ export default function DashboardPage() {
                 </div>
               </div>
             )}
-          </div>
-        </div>
+          </motion.div>
+        </motion.div>
       </div>
     </div>
   );

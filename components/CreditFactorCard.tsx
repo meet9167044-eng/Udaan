@@ -1,5 +1,7 @@
 "use client";
 
+import { motion } from "framer-motion";
+
 interface CreditFactorCardProps {
   icon: React.ReactNode;
   label: string;
@@ -22,7 +24,11 @@ export default function CreditFactorCard({
     trend === "down" ? "↓" : "→";
 
   return (
-    <div className="glass-card glass-card-static flex flex-col gap-5">
+    <motion.div 
+      whileHover={{ scale: 1.02, boxShadow: `0 8px 30px ${color}15`, borderColor: `${color}30` }}
+      transition={{ type: "spring", stiffness: 300, damping: 20 }}
+      className="glass-card flex flex-col gap-5 cursor-default"
+    >
       <div className="flex items-start justify-between gap-4">
         <div className="flex items-center gap-4 min-w-0">
           <div
@@ -47,15 +53,17 @@ export default function CreditFactorCard({
           <span className="text-slate-300 font-medium tabular-nums">{percentage}%</span>
         </div>
         <div className="h-1.5 rounded-full bg-white/[0.06] overflow-hidden">
-          <div
-            className="h-full rounded-full transition-all duration-1000 ease-out"
+          <motion.div
+            initial={{ width: 0 }}
+            animate={{ width: `${percentage}%` }}
+            transition={{ duration: 1.5, ease: "easeOut", delay: 0.2 }}
+            className="h-full rounded-full"
             style={{
-              width: `${percentage}%`,
               background: `linear-gradient(90deg, ${color}66, ${color})`,
             }}
           />
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 }

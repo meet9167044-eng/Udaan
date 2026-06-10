@@ -7,6 +7,7 @@ import { useAuth } from "@/components/AuthContext";
 import ScoreGauge from "@/components/ScoreGauge";
 import NanoLoanLadder from "@/components/NanoLoanLadder";
 import PsychometricModal from "@/components/PsychometricModal";
+import { motion, Variants } from "framer-motion";
 
 const BASE_SCORE = 623;
 
@@ -92,6 +93,15 @@ export default function JourneyPage() {
   const [showPsycho, setShowPsycho]     = useState(false);
   const [rajuMode, setRajuMode]         = useState(true);
   const [psychoBoost, setPsychoBoost]   = useState(0);
+
+  const containerVariants: Variants = {
+    hidden: { opacity: 0 },
+    show: { opacity: 1, transition: { staggerChildren: 0.15 } }
+  };
+  const itemVariants: Variants = {
+    hidden: { opacity: 0, y: 20 },
+    show: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 300, damping: 24 } }
+  };
 
   const currentScore = rajuMode ? BASE_SCORE : 742;
 
@@ -187,9 +197,14 @@ export default function JourneyPage() {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-10">
+        <motion.div 
+          className="grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-10"
+          variants={containerVariants}
+          initial="hidden"
+          animate="show"
+        >
           {/* ── Left column ────────────────────────────────── */}
-          <div className="lg:col-span-1 stack-xl">
+          <motion.div className="lg:col-span-1 stack-xl" variants={itemVariants}>
             {/* Score gauge */}
             <div className="glass-card glass-card-static flex flex-col items-center">
               <p className="text-caption uppercase tracking-widest mb-4 w-full text-center">
@@ -246,10 +261,10 @@ export default function JourneyPage() {
 
             {/* Nano Loan Ladder (replaces old Loan Unlock Levels) */}
             <NanoLoanLadder borrowerName={borrowerName} />
-          </div>
+          </motion.div>
 
           {/* ── Right column ─────────────────────────────── */}
-          <div className="lg:col-span-2 stack-xl">
+          <motion.div className="lg:col-span-2 stack-xl" variants={itemVariants}>
             {/* Roadmap */}
             <div>
               <div className="flex items-center justify-between mb-8">
@@ -263,10 +278,10 @@ export default function JourneyPage() {
                   const badge  = statusLabel(task.status);
                   const earned = Math.round((task.progress / 100) * task.scoreBoost);
                   return (
-                    <div
+                    <motion.div
+                      whileHover={{ scale: 1.02, borderColor: `${task.color}40`, boxShadow: `0 8px 30px ${task.color}15` }}
                       key={task.id}
-                      className="glass-card glass-card-static animate-slide-up"
-                      style={{ animationDelay: `${i * 80}ms`, animationFillMode: "both" }}
+                      className="glass-card glass-card-static relative"
                     >
                       <div className="flex flex-col sm:flex-row sm:items-start gap-4">
                         <div
@@ -327,7 +342,7 @@ export default function JourneyPage() {
                             : "Mark progress"}
                         </button>
                       </div>
-                    </div>
+                    </motion.div>
                   );
                 })}
               </div>
@@ -400,8 +415,8 @@ export default function JourneyPage() {
                 </Link>
               </div>
             </div>
-          </div>
-        </div>
+          </motion.div>
+        </motion.div>
       </div>
     </div>
   );

@@ -1,5 +1,5 @@
 "use client";
-
+import { motion } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
 
 interface ScoreGaugeProps {
@@ -95,6 +95,20 @@ export default function ScoreGauge({
 
   return (
     <div className="flex flex-col items-center" style={{ width: size }}>
+      {/* New Pulsing glow background */}
+      <motion.div
+        animate={{
+          scale: [1, 1.05, 1],
+          opacity: [0.15, 0.25, 0.15],
+        }}
+        transition={{
+          duration: 3,
+          repeat: Infinity,
+          ease: "easeInOut"
+        }}
+        className="absolute inset-0 rounded-full blur-2xl pointer-events-none"
+        style={{ background: `radial-gradient(circle, ${color}60 0%, transparent 70%)` }}
+      />
       <svg width={size} height={size * 0.85} viewBox={`0 0 ${size} ${size * 0.85}`}>
         {/* Gradient defs */}
         <defs>

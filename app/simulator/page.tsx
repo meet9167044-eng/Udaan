@@ -1,5 +1,5 @@
 "use client";
-
+import { motion, Variants } from "framer-motion";
 import { useState, useMemo, useEffect, useRef } from "react";
 import ScoreGauge from "@/components/ScoreGauge";
 import Link from "next/link";
@@ -176,6 +176,19 @@ export default function SimulatorPage() {
     return tips.slice(0, 4);
   }, [values]);
 
+    const containerVariants: Variants = {
+    hidden: { opacity: 0 },
+    show: {
+      opacity: 1,
+      transition: { staggerChildren: 0.15 }
+    }
+  };
+
+  const itemVariants: Variants = {
+    hidden: { opacity: 0, y: 20 },
+    show: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 300, damping: 24 } }
+  };
+
   /* Server-side calculation (debounced in auto mode) */
   const runServerCalc = async (v: Record<string, number>) => {
     setServerError(null);
@@ -263,18 +276,22 @@ export default function SimulatorPage() {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-10">
-          <div className="lg:col-span-2 space-y-5">
+        <motion.div 
+          className="grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-10"
+          variants={containerVariants}
+          initial="hidden"
+          animate="show">
+        
+          <motion.div className="lg:col-span-2 space-y-5" variants={itemVariants}>
             {factors.map((f, i) => {
               const v        = values[f.id];
               const fillPct  = factorPct(v, f) * 100;
               const isGood   = fillPct >= 60;
               return (
-                <div
+                <motion.div
                   key={f.id}
-                  className="glass-card glass-card-static animate-slide-up"
-                  style={{ animationDelay: `${i * 80}ms`, animationFillMode: "both" }}
-                >
+                  whileHover={{ scale: 1.02, borderColor: `${f.color}40`, boxShadow: `0 8px 30px ${f.color}15` }}
+                  className="glass-card glass-card-static relative overflow-hidden">
                   <div className="flex items-center justify-between mb-4">
                     <div className="flex items-center gap-3">
                       <div
@@ -317,7 +334,7 @@ export default function SimulatorPage() {
                       <span>{f.max}{f.unit}</span>
                     </div>
                   </div>
-                </div>
+                </motion.div>
               );
             })}
 
@@ -351,10 +368,10 @@ export default function SimulatorPage() {
                 <span className={`absolute top-1 w-4 h-4 bg-white rounded-full shadow-sm transition-all duration-300 ${autoMode ? "left-6" : "left-1"}`} />
               </button>
             </div>
-          </div>
+          </motion.div>
 
           {/* Results panel */}
-          <div className="stack-xl">
+          <motion.div className="stack-xl" variants={itemVariants}>
             {/* Score projection */}
             <div className="glass-card glass-card-static relative overflow-hidden">
               <div className="absolute top-0 right-0 w-40 h-40 bg-primary-500/10 blur-[50px] pointer-events-none" />
@@ -522,10 +539,10 @@ export default function SimulatorPage() {
             <Link href="/dashboard" className="btn-primary text-sm w-full py-3 text-center block">
               View Trust Dashboard →
             </Link>
-          </div>
-        </div>
+          </motion.div>
+        </motion.div>
       </div>
-      </div>
-    </AuthGuard>
+    </div>
+  </AuthGuard>
   );
 }
