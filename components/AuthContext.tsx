@@ -39,26 +39,32 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }, []);
 
-  if (!hydrated) {
-    return null;
-  }
+  // ✅ FIXED — useMemo must always run, before any early return
+  const value = useMemo(() => ({
+    user,
+    login: (session: UserSession) => {
+      window.localStorage.setItem(STORAGE_KEY, JSON.stringify(session));
+      setUser(session);
+      const destination =
+        session.role === "borrower" ? "/dashboard" :
+        session.role === "lender"   ? "/lender" : "/admin";
+      router.push(destination);
+    },
+    logout: () => {
+      window.localStorage.removeItem(STORAGE_KEY);
+      setUser(null);
+      router.push("/");
+    },
+  }), [user, router]);
 
-  const login = (session: UserSession) => {
-    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(session));
-    setUser(session);
-    const destination = session.role === "borrower" ? "/dashboard" : session.role === "lender" ? "/lender" : "/admin";
-    router.push(destination);
-  };
+  // Early return AFTER all hooks
+  if (!hydrated) return null;
 
-  const logout = () => {
-    window.localStorage.removeItem(STORAGE_KEY);
-    setUser(null);
-    router.push("/");
-  };
-
-  const value = useMemo(() => ({ user, login, logout }), [user]);
-
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+  return (
+    <AuthContext.Provider value={value}>
+      {children}
+    </AuthContext.Provider>
+  );
 }
 
 export function useAuth() {
