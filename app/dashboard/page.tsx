@@ -1,16 +1,14 @@
 "use client";
-import { motion, Variants } from "framer-motion";
+
 import { useState, useEffect } from "react";
 import ScoreGauge from "@/components/ScoreGauge";
 import CreditFactorCard from "@/components/CreditFactorCard";
 import FraudIntelCard from "@/components/FraudIntelCard";
 import ExplainabilityPanel from "@/components/ExplainabilityPanel";
-import AuthGuard from "@/components/AuthGuard";
-import { useAuth } from "@/components/AuthContext";
 import Link from "next/link";
 import { getBorrower, type BorrowerProfile } from "@/lib/api";
 
-const DEFAULT_BORROWER_NAME = "Borrower";
+const BORROWER_NAME = "Raju Sharma";
 
 const monthlyTrend = [42, 55, 48, 62, 58, 74];
 
@@ -22,39 +20,25 @@ const activities = [
 ];
 
 const trustHealth = [
-  { label: "Data freshness",    value: "Live",     color: "#22c55e" },
-  { label: "Consent active",    value: "5 sources",color: "#3b96f2" },
-  { label: "Alternate signals", value: "14",       color: "#8b5cf6" },
-  { label: "Last model run",    value: "Just now", color: "#22c55e" },
+  { label: "Data freshness",    value: "Live",       color: "#22c55e" },
+  { label: "Consent active",    value: "5 sources",  color: "#3b96f2" },
+  { label: "Alt. signals",      value: "14",         color: "#8b5cf6" },
+  { label: "AI Model",          value: "GBR v1.0",   color: "#f59e0b" },
 ];
 
 export default function DashboardPage() {
   const [activeTab, setActiveTab] = useState<"overview" | "factors" | "offers">("overview");
   const [profile, setProfile] = useState<BorrowerProfile | null>(null);
   const [loading, setLoading] = useState(true);
-  const { user } = useAuth();
-  const borrowerName = user?.borrowerName ?? DEFAULT_BORROWER_NAME;
 
   useEffect(() => {
-    if (!user) return;
     let active = true;
-    setLoading(true);
-    getBorrower(borrowerName)
+    getBorrower(BORROWER_NAME)
       .then((res) => { if (active) setProfile(res); })
       .catch(console.error)
       .finally(() => { if (active) setLoading(false); });
     return () => { active = false; };
-  }, [user, borrowerName]);
-
-  if (!user || user.role !== "borrower") {
-        return (
-      <AuthGuard requiredRole="borrower">
-        <div className="flex h-screen items-center justify-center text-white">
-          Checking authorization...
-        </div>
-      </AuthGuard>
-    );
-  }
+  }, []);
 
   if (loading) {
     return (
@@ -115,69 +99,69 @@ export default function DashboardPage() {
     { bank: "Nano Capital", type: "Credit Builder Loan", amount: `₹${profile.loan_limit}`, rate: "0%", emi: `₹${Math.round(profile.loan_limit/4)}/mo`, badge: "Unlocked", color: "#22c55e" },
     { bank: "HDFC Bank", type: "Personal Loan", amount: `₹${profile.loan_limit * 5}`, rate: "12.5%", emi: `₹${Math.round((profile.loan_limit*5)/12)}/mo`, badge: "Requires 750 Score", color: "#3b96f2" },
   ];
-    const containerVariants:Variants = {
-    hidden: { opacity: 0 },
-    show: {
-      opacity: 1,
-      transition: { staggerChildren: 0.1 }
-    }
-  };
 
-  const itemVariants:Variants = {
-    hidden: { opacity: 0, y: 20 },
-    show: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 300, damping: 24 } }
-  };
   return (
-    <div className="page-body" style={{ background: "radial-gradient(ellipse 80% 40% at 50% 0%, #0f1a30 0%, #080c18 55%)" }}>
+    <div className="page-body" style={{ background: "radial-gradient(ellipse 90% 50% at 50% 0%, #091830 0%, #080c18 55%)" }}>
       <div className="page-container pt-8 md:pt-12">
 
         {/* Page header */}
-        <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-6 mb-12">
+        <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-6 mb-10">
           <div>
-            <p className="section-label">Trust Dashboard</p>
-            <h1 className="heading-page text-white mt-1">{profile?.name ?? borrowerName}</h1>
-            <p className="text-caption mt-3">Location: {profile.city} · Income: ₹{(profile.monthly_income).toLocaleString()}/mo</p>
+            <div className="flex items-center gap-3 mb-3">
+              <p className="section-label !mb-0">Trust Dashboard</p>
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-green-500/15 text-green-400 border border-green-500/20">
+                <span className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse" />AI Powered
+              </span>
+            </div>
+            <h1 className="heading-page text-white mt-1">{BORROWER_NAME}</h1>
+            <p className="text-caption mt-2">📍 {profile.city} · 💰 ₹{(profile.monthly_income).toLocaleString()}/mo · 🤖 GradientBoostingRegressor v1.0</p>
           </div>
           <div className="flex flex-wrap gap-3">
             <Link href="/simulator" id="dashboard-simulate-btn" className="btn-outline text-sm !py-2.5 !px-4">
-              Simulate Trust Score
+              🔬 Simulate
             </Link>
             <Link href="/consent" id="dashboard-consent-btn" className="btn-primary text-sm !py-2.5 !px-4">
-              Manage Consent
+              🔒 Consent Vault
             </Link>
           </div>
         </div>
 
         {/* Tabs */}
-        <div className="flex gap-1 p-1.5 glass rounded-xl mb-12 w-fit">
-          {(["overview", "factors", "offers"] as const).map((tab) => (
+        <div className="flex gap-1 p-1.5 glass rounded-2xl mb-10 w-fit border border-white/[0.06]">
+          {([
+            { key: "overview", icon: "📊", label: "Overview" },
+            { key: "factors",  icon: "🔍", label: "Factors" },
+            { key: "offers",   icon: "💳", label: "Loan Offers" },
+          ] as const).map(({ key, icon, label }) => (
             <button
-              key={tab}
-              id={`dashboard-tab-${tab}`}
-              onClick={() => setActiveTab(tab)}
-              className={`px-5 py-2.5 rounded-lg text-sm font-medium transition-colors capitalize ${
-                activeTab === tab ? "bg-white/[0.08] text-white" : "text-slate-500 hover:text-slate-300"
+              key={key}
+              id={`dashboard-tab-${key}`}
+              onClick={() => setActiveTab(key)}
+              className={`px-5 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 flex items-center gap-2 ${
+                activeTab === key
+                  ? "bg-primary-500/20 text-white border border-primary-500/30 shadow-[inset_0_0_16px_rgba(59,150,242,0.1)]"
+                  : "text-slate-500 hover:text-slate-300 hover:bg-white/[0.03]"
               }`}
             >
-              {tab}
+              <span className="text-sm">{icon}</span>{label}
             </button>
           ))}
         </div>
 
-        <motion.div 
-          className="grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-10"
-          variants={containerVariants}
-          initial="hidden"
-          animate="show">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-10">
 
           {/* ── Left column ──────────────────────────────────── */}
-          <motion.div className="lg:col-span-1 stack-xl" variants={itemVariants}>
+          <div className="lg:col-span-1 stack-xl">
 
             {/* Score card */}
-            <div className="glass-card glass-card-static flex flex-col items-center">
-              <div className="flex items-center justify-between w-full mb-10">
-                <h2 className="heading-card text-white">Trust Score</h2>
-                <span className="px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-primary-500/10 text-primary-300 border border-primary-500/30">
+            <div className="glass-card glass-card-static flex flex-col items-center relative overflow-hidden">
+              <div className="absolute top-0 right-0 w-32 h-32 bg-primary-500/8 blur-3xl pointer-events-none" />
+              <div className="flex items-center justify-between w-full mb-8 relative z-10">
+                <div>
+                  <h2 className="heading-card text-white">Trust Score</h2>
+                  <p className="text-slate-500 text-xs mt-0.5">GradientBoostingRegressor</p>
+                </div>
+                <span className="px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-primary-500/12 text-primary-300 border border-primary-500/25">
                   / 1000
                 </span>
               </div>
@@ -232,15 +216,15 @@ export default function DashboardPage() {
             </div>
 
             {/* Fraud Intelligence */}
-            <FraudIntelCard borrowerName={borrowerName} />
-          </motion.div>
+            <FraudIntelCard borrowerName={BORROWER_NAME} />
+          </div>
 
-          {/* ── Right column ──────────────────────────────────── */}
-          <motion.div className="lg:col-span-2 stack-xl" variants={itemVariants}>
+          {/* ── Right column ─────────────────────────────────── */}
+          <div className="lg:col-span-2 stack-xl">
 
             {/* Explainability Panel (replaces 3-bullet AI insights) */}
             {activeTab === "overview" && (
-              <ExplainabilityPanel borrowerName={borrowerName} />
+              <ExplainabilityPanel borrowerName={BORROWER_NAME} />
             )}
 
             {/* Trust Factors */}
@@ -328,8 +312,8 @@ export default function DashboardPage() {
                 </div>
               </div>
             )}
-          </motion.div>
-        </motion.div>
+          </div>
+        </div>
       </div>
     </div>
   );

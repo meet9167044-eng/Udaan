@@ -30,6 +30,17 @@ export type ScoreResult = {
   loan_limit: number;
   confidence: string;
   reasons: string[];
+  // ML model fields
+  feature_importances?: Record<string, number>;
+  signal_contributions?: Record<string, number>;
+  model_info?: {
+    type: string;
+    version: string;
+    engine: string;
+    trained_on?: string;
+    note: string;
+    signals: string[];
+  };
 };
 
 export type FraudFlag = {

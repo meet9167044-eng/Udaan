@@ -2,14 +2,12 @@
 
 import { useMemo, useState } from "react";
 import Link from "next/link";
-import AuthGuard from "@/components/AuthGuard";
-import { useAuth } from "@/components/AuthContext";
 import ScoreGauge from "@/components/ScoreGauge";
 import NanoLoanLadder from "@/components/NanoLoanLadder";
 import PsychometricModal from "@/components/PsychometricModal";
-import { motion, Variants } from "framer-motion";
 
-const BASE_SCORE = 623;
+const BORROWER_NAME = "Raju Sharma";
+const BASE_SCORE    = 623;
 
 type TaskStatus = "completed" | "in_progress" | "pending";
 
@@ -88,20 +86,10 @@ function statusLabel(status: TaskStatus) {
 }
 
 export default function JourneyPage() {
-  const { user } = useAuth();
   const [tasks, setTasks]               = useState(roadmapTasks);
   const [showPsycho, setShowPsycho]     = useState(false);
   const [rajuMode, setRajuMode]         = useState(true);
   const [psychoBoost, setPsychoBoost]   = useState(0);
-
-  const containerVariants: Variants = {
-    hidden: { opacity: 0 },
-    show: { opacity: 1, transition: { staggerChildren: 0.15 } }
-  };
-  const itemVariants: Variants = {
-    hidden: { opacity: 0, y: 20 },
-    show: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 300, damping: 24 } }
-  };
 
   const currentScore = rajuMode ? BASE_SCORE : 742;
 
@@ -120,12 +108,6 @@ export default function JourneyPage() {
 
   const remainingBoost  = totalPotentialBoost - earnedBoost;
   const projectedScore  = currentScore + totalPotentialBoost;
-
-  if (!user || user.role !== "borrower") {
-    return <AuthGuard requiredRole="borrower"></AuthGuard>;
-  }
-
-  const borrowerName = user.borrowerName ?? "Borrower";
 
   const toggleTaskProgress = (id: string, isPsychometric?: boolean) => {
     if (isPsychometric) {
@@ -155,7 +137,7 @@ export default function JourneyPage() {
   };
 
   return (
-    <div className="page-body" style={{ background: "radial-gradient(ellipse 80% 40% at 50% 0%, #0f1a30 0%, #080c18 55%)" }}>
+    <div className="page-body" style={{ background: "radial-gradient(ellipse 85% 45% at 50% 0%, #0e1f38 0%, #080c18 55%)" }}>
       {/* Psychometric modal */}
       {showPsycho && (
         <PsychometricModal
@@ -166,9 +148,14 @@ export default function JourneyPage() {
 
       <div className="page-container pt-8 md:pt-12">
         {/* Header */}
-        <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6 mb-14 animate-fade-in">
+        <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6 mb-12 animate-fade-in">
           <div className="max-w-xl">
-            <p className="section-label">Credit Builder Journey</p>
+            <div className="flex items-center gap-3 mb-3">
+              <p className="section-label !mb-0">Credit Builder Journey</p>
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-purple-500/15 text-purple-300 border border-purple-500/20">
+                <span className="w-1.5 h-1.5 rounded-full bg-purple-400 animate-pulse" />AI Roadmap
+              </span>
+            </div>
             <h1 className="heading-page text-white mt-2 mb-4">
               Build trust, <span className="gradient-text">unlock credit</span>
             </h1>
@@ -177,56 +164,55 @@ export default function JourneyPage() {
             </p>
           </div>
           <div className="flex gap-3 flex-wrap">
-            {/* Borrower view toggle */}
             <button
               onClick={() => setRajuMode(!rajuMode)}
-              className={`text-sm py-2 px-4 rounded-xl border font-medium transition-all duration-300 ${
+              className={`text-sm py-2.5 px-5 rounded-xl border font-medium transition-all duration-300 ${
                 rajuMode
                   ? "border-amber-500/40 bg-amber-500/10 text-amber-300"
                   : "border-white/10 bg-white/[0.02] text-slate-400 hover:text-white"
               }`}
             >
-              {rajuMode ? `👤 ${borrowerName}'s View` : `Switch to ${borrowerName}`}
+              {rajuMode ? "Raju's View" : "Switch to Raju"}
             </button>
-            <Link href="/simulator" className="btn-outline text-sm py-2 px-4">
+            <Link href="/simulator" className="btn-outline text-sm py-2.5 px-5">
               Simulate Impact
             </Link>
-            <Link href="/dashboard" className="btn-primary text-sm py-2 px-4">
+            <Link href="/dashboard" className="btn-primary text-sm py-2.5 px-5">
               Trust Dashboard
             </Link>
           </div>
         </div>
 
-        <motion.div 
-          className="grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-10"
-          variants={containerVariants}
-          initial="hidden"
-          animate="show"
-        >
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-10">
           {/* ── Left column ────────────────────────────────── */}
-          <motion.div className="lg:col-span-1 stack-xl" variants={itemVariants}>
+          <div className="lg:col-span-1 stack-xl">
             {/* Score gauge */}
-            <div className="glass-card glass-card-static flex flex-col items-center">
-              <p className="text-caption uppercase tracking-widest mb-4 w-full text-center">
-                {rajuMode ? `${borrowerName}'s Trust Score` : "Current Trust Score"}
+            <div className="glass-card glass-card-static flex flex-col items-center relative overflow-hidden">
+              <div className="absolute top-0 right-0 w-28 h-28 bg-purple-500/8 blur-3xl pointer-events-none" />
+              <p className="text-caption uppercase tracking-widest mb-2 w-full text-center relative z-10">
+                {rajuMode ? "Raju's Trust Score" : "Current Trust Score"}
               </p>
+              <p className="text-slate-600 text-[10px] mb-3 text-center">GradientBoostingRegressor</p>
               {rajuMode && (
-                <div className="mb-3 px-3 py-1.5 rounded-full bg-amber-500/10 border border-amber-500/30">
+                <div className="mb-3 px-3 py-1.5 rounded-full bg-amber-500/10 border border-amber-500/30 relative z-10">
                   <p className="text-amber-300 text-xs font-medium">Kirana Store Owner · Mumbai</p>
                 </div>
               )}
-              <ScoreGauge score={currentScore} maxScore={1000} minScore={0} size={200} animated={false} />
-              <div className="w-full mt-4 glass rounded-xl p-4 space-y-3">
+              <div className="relative z-10">
+                <ScoreGauge score={currentScore} maxScore={1000} minScore={0} size={200} animated={false} />
+              </div>
+              <div className="w-full mt-4 glass rounded-xl p-4 space-y-3 relative z-10">
                 <div className="flex justify-between text-sm">
                   <span className="text-slate-400">Journey progress</span>
                   <span className="text-white font-semibold tabular-nums">{journeyProgress}%</span>
                 </div>
                 <div className="h-2.5 rounded-full bg-white/10 overflow-hidden">
                   <div
-                    className="h-full rounded-full bg-gradient-to-r from-primary-700 to-primary-400 transition-all duration-700 ease-out"
-                    style={{ width: `${journeyProgress}%` }}
+                    className="h-full rounded-full transition-all duration-700 ease-out"
+                    style={{ width: `${journeyProgress}%`, background: "linear-gradient(90deg, #7c3aed, #a78bfa)" }}
                   />
                 </div>
+                <p className="text-slate-500 text-[10px] text-center">{tasks.filter(t => t.status === "completed").length} of {tasks.length} tasks complete</p>
               </div>
             </div>
 
@@ -260,11 +246,11 @@ export default function JourneyPage() {
             </div>
 
             {/* Nano Loan Ladder (replaces old Loan Unlock Levels) */}
-            <NanoLoanLadder borrowerName={borrowerName} />
-          </motion.div>
+            <NanoLoanLadder borrowerName={BORROWER_NAME} />
+          </div>
 
           {/* ── Right column ─────────────────────────────── */}
-          <motion.div className="lg:col-span-2 stack-xl" variants={itemVariants}>
+          <div className="lg:col-span-2 stack-xl">
             {/* Roadmap */}
             <div>
               <div className="flex items-center justify-between mb-8">
@@ -278,10 +264,10 @@ export default function JourneyPage() {
                   const badge  = statusLabel(task.status);
                   const earned = Math.round((task.progress / 100) * task.scoreBoost);
                   return (
-                    <motion.div
-                      whileHover={{ scale: 1.02, borderColor: `${task.color}40`, boxShadow: `0 8px 30px ${task.color}15` }}
+                    <div
                       key={task.id}
-                      className="glass-card glass-card-static relative"
+                      className="glass-card glass-card-static animate-slide-up"
+                      style={{ animationDelay: `${i * 80}ms`, animationFillMode: "both" }}
                     >
                       <div className="flex flex-col sm:flex-row sm:items-start gap-4">
                         <div
@@ -342,7 +328,7 @@ export default function JourneyPage() {
                             : "Mark progress"}
                         </button>
                       </div>
-                    </motion.div>
+                    </div>
                   );
                 })}
               </div>
@@ -415,8 +401,8 @@ export default function JourneyPage() {
                 </Link>
               </div>
             </div>
-          </motion.div>
-        </motion.div>
+          </div>
+        </div>
       </div>
     </div>
   );

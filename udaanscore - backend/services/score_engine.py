@@ -1,84 +1,110 @@
-def calculate_trust_score(bills, upi, cashflow, savings, location, quiz):
-    
-    # Step 1: Calculate raw score using weighted formula
-    raw = (
-        bills    * 0.20 +
-        upi      * 0.20 +
-        cashflow * 0.20 +
-        savings  * 0.15 +
-        location * 0.10 +
-        quiz     * 0.15
-    )
+"""
+UdaanScore — Score Engine (ML-Powered)
+=======================================
+Primary:  GradientBoostingRegressor via ml_pipeline.py
+Fallback: Weighted formula (if model unavailable)
 
-    # Step 2: Scale to 0-1000
-    score = int(raw * 10)
+Both paths return the same response shape — zero breaking changes.
+New fields: feature_importances, signal_contributions, model_info
+"""
 
-    # Step 3: Determine Risk Band
-    if score >= 800:
-        risk = "Very Low Risk"
-        loan_limit = 100000
-    elif score >= 700:
-        risk = "Low Risk"
-        loan_limit = 50000
-    elif score >= 600:
-        risk = "Medium Risk"
-        loan_limit = 15000
-    elif score >= 500:
-        risk = "High Risk"
-        loan_limit = 5000
-    else:
-        risk = "Rejected"
-        loan_limit = 0
+from services.ml_pipeline import ml_predict
 
-    # Step 4: Confidence Score
-    # Based on how many parameters have data (above 0)
-    params = [bills, upi, cashflow, savings, location, quiz]
+
+# ─── Helpers ────────────────────────────────────────────────────────────────
+
+def _risk(score: int) -> str:
+    if score >= 800: return "Very Low Risk"
+    if score >= 700: return "Low Risk"
+    if score >= 600: return "Medium Risk"
+    if score >= 500: return "High Risk"
+    return "Rejected"
+
+def _loan(score: int) -> int:
+    if score >= 800: return 100000
+    if score >= 700: return 50000
+    if score >= 600: return 15000
+    if score >= 500: return 5000
+    return 0
+
+def _conf(params: list) -> str:
     filled = sum(1 for p in params if p > 0)
+    return "High" if filled >= 6 else "Medium" if filled >= 4 else "Low"
 
-    if filled >= 6:
-        confidence = "High"
-    elif filled >= 4:
-        confidence = "Medium"
-    else:
-        confidence = "Low"
+def _reasons(bills, upi, cashflow, savings, location, quiz) -> list:
+    checks = [
+        (bills,    80, "✅ Bills paid consistently on time",       "❌ Irregular bill payment history"),
+        (upi,      80, "✅ Stable and regular UPI usage",          "❌ Low or inconsistent UPI activity"),
+        (cashflow, 80, "✅ Consistent monthly income flow",        "❌ Unstable cash flow detected"),
+        (savings,  80, "✅ Good savings habit maintained",         "❌ Low savings balance observed"),
+        (location, 80, "✅ Stable residential location",           "❌ Frequent location changes detected"),
+        (quiz,     80, "✅ Strong psychometric assessment",        "❌ Psychometric score needs improvement"),
+    ]
+    return [ok if v >= th else bad for v, th, ok, bad in checks]
 
-    # Step 5: Explainability
-    reasons = []
 
-    if bills >= 80:
-        reasons.append("✅ Bills paid consistently on time")
-    else:
-        reasons.append("❌ Irregular bill payment history")
+# ─── Main entry point ────────────────────────────────────────────────────────
 
-    if upi >= 80:
-        reasons.append("✅ Stable and regular UPI usage")
-    else:
-        reasons.append("❌ Low or inconsistent UPI activity")
+def calculate_trust_score(bills: float, upi: float, cashflow: float,
+                          savings: float, location: float, quiz: float) -> dict:
+    """
+    Score a borrower. Returns:
+        trust_score          int   0-1000
+        risk_band            str
+        loan_limit           int   INR
+        confidence           str   High / Medium / Low
+        reasons              list  explainability bullets
+        feature_importances  dict  signal -> % importance (from ML model)
+        signal_contributions dict  signal -> weighted contribution score
+        model_info           dict  metadata
+    """
+    params = [bills, upi, cashflow, savings, location, quiz]
 
-    if cashflow >= 80:
-        reasons.append("✅ Consistent monthly income flow")
-    else:
-        reasons.append("❌ Unstable cash flow detected")
+    try:
+        ml    = ml_predict(bills, upi, cashflow, savings, location, quiz)
+        score = ml["ml_score"]
 
-    if savings >= 80:
-        reasons.append("✅ Good savings habit maintained")
-    else:
-        reasons.append("❌ Low savings balance observed")
+        return {
+            "trust_score":          score,
+            "risk_band":            _risk(score),
+            "loan_limit":           _loan(score),
+            "confidence":           _conf(params),
+            "reasons":              _reasons(bills, upi, cashflow, savings, location, quiz),
+            "feature_importances":  ml["feature_importances"],
+            "signal_contributions": ml["signal_contributions"],
+            "model_info": {
+                "type":    ml["model_type"],
+                "version": ml["model_version"],
+                "engine":  ml["engine"],
+                "trained_on": "6,000 synthetic borrower profiles",
+                "note":    "GradientBoostingRegressor - alternative data scorer. Hackathon prototype.",
+                "signals": ["bills", "upi", "cashflow", "savings", "location", "quiz"],
+            },
+        }
 
-    if location >= 80:
-        reasons.append("✅ Stable residential location")
-    else:
-        reasons.append("❌ Frequent location changes detected")
+    except Exception as exc:
+        import logging
+        logging.getLogger(__name__).warning(f"ML model unavailable ({exc}), using formula fallback")
 
-    if quiz >= 80:
-        reasons.append("✅ Strong psychometric assessment")
-    else:
-        reasons.append("❌ Psychometric score needs improvement")
+        raw   = (bills*0.20 + upi*0.20 + cashflow*0.20 +
+                 savings*0.15 + location*0.10 + quiz*0.15)
+        score = int(raw * 10)
 
-    return {
-        "trust_score": score,
-        "risk_band": risk,
-        "loan_limit": loan_limit,
-        "confidence": confidence,
-        "reasons": reasons
-    }
+        return {
+            "trust_score":          score,
+            "risk_band":            _risk(score),
+            "loan_limit":           _loan(score),
+            "confidence":           _conf(params),
+            "reasons":              _reasons(bills, upi, cashflow, savings, location, quiz),
+            "feature_importances":  {n: w*100 for n, w in zip(
+                ["bills","upi","cashflow","savings","location","quiz"],
+                [0.20, 0.20, 0.20, 0.15, 0.10, 0.15])},
+            "signal_contributions": {},
+            "model_info": {
+                "type":    "Weighted Formula (fallback)",
+                "version": "fallback-v1",
+                "engine":  "python",
+                "note":    "ML model unavailable - using deterministic weighted formula.",
+                "signals": ["bills","upi","cashflow","savings","location","quiz"],
+            },
+        }

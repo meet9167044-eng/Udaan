@@ -1,0 +1,37 @@
+{
+  "model_name": "UdaanScore Trust Scorer",
+  "model_type": "GradientBoostingRegressor (scikit-learn)",
+  "version": "1.0.0",
+  "features": [
+    "bills",
+    "upi",
+    "cashflow",
+    "savings",
+    "location",
+    "quiz"
+  ],
+  "training_samples": 4800,
+  "test_samples": 1200,
+  "performance": {
+    "mae_pts": 16.18,
+    "r2": 0.9895
+  },
+  "feature_importances": {
+    "bills": 0.5786,
+    "upi": 0.165,
+    "cashflow": 0.0831,
+    "savings": 0.0714,
+    "location": 0.0544,
+    "quiz": 0.0474
+  },
+  "expert_weights": {
+    "bills": 0.2,
+    "upi": 0.2,
+    "cashflow": 0.2,
+    "savings": 0.15,
+    "location": 0.1,
+    "quiz": 0.15
+  },
+  "output_range": "0\u20131000",
+  "disclosure": "Trained on synthetic data. Hackathon MVP \u2014 not a regulated credit-scoring model."
+}
