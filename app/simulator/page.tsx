@@ -318,8 +318,8 @@ export default function SimulatorPage() {
             Model Your <span className="gradient-text">Trust Future</span>
           </h1>
           <p className="body-md max-w-xl mx-auto">
-            Adjust alternate-data signals to see how UPI, utilities, savings, cash flow, and GST
-            shape your AI Trust Score — before you apply.
+            Adjust alternative data signals to see exactly how UPI, utilities, savings, cash flow, and GST
+            shape your Trust Score — and what loan access you unlock.
           </p>
         </div>
 
@@ -327,7 +327,7 @@ export default function SimulatorPage() {
         <div className="mb-8">
           <div className="flex items-center gap-3 mb-4">
             <h2 className="text-white font-semibold text-sm">Quick Scenarios</h2>
-            <span className="text-slate-500 text-xs">Click to pre-fill signal values and see the impact</span>
+            <span className="text-slate-500 text-xs">Pick a real-life situation to instantly pre-fill all signal values</span>
           </div>
           <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
             {scenarios.map((s) => (
@@ -379,6 +379,33 @@ export default function SimulatorPage() {
             })}
           </div>
         </div>
+
+        {/* ── What does this score change mean? ─────────────────────── */}
+        {delta !== 0 && (
+          <div className="glass rounded-xl p-4 border border-primary-500/20 mb-8 flex items-start gap-4">
+            <div className="w-9 h-9 rounded-xl bg-primary-500/15 flex items-center justify-center shrink-0">
+              <svg className="w-4 h-4 text-primary-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/>
+              </svg>
+            </div>
+            <div>
+              <p className="text-white font-semibold text-sm">
+                {delta > 0 ? `+${delta} pts means:` : `${delta} pts means:`}
+              </p>
+              <p className="text-slate-300 text-xs mt-1 leading-relaxed">
+                {futureScore >= 800
+                  ? `Very Low Risk — eligible for up to ₹1,00,000 instantly. Auto-approval likely.`
+                  : futureScore >= 700
+                  ? `Low Risk — eligible for up to ₹50,000. High chance of approval.`
+                  : futureScore >= 600
+                  ? `Medium Risk — eligible for up to ₹15,000. Lender may request manual review.`
+                  : futureScore >= 500
+                  ? `High Risk — eligible for up to ₹5,000. Limited loan access.`
+                  : `Below threshold — not currently eligible. Focus on utility bills and UPI activity.`}
+              </p>
+            </div>
+          </div>
+        )}
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-10">
 
@@ -623,9 +650,19 @@ export default function SimulatorPage() {
               )}
             </div>
 
-            <Link href="/dashboard" className="btn-primary text-sm w-full py-3 text-center block">
-              View Trust Dashboard →
+            <Link href="/dashboard" className="btn-outline text-sm w-full py-3 text-center block">
+              ← Back to Trust Dashboard
             </Link>
+
+            {/* Journey CTA */}
+            <div className="glass-card glass-card-static border border-green-500/20 text-center">
+              <p className="text-xl mb-2">&#127775;</p>
+              <p className="text-white font-semibold text-sm mb-1">Ready to make this real?</p>
+              <p className="text-slate-400 text-xs mb-4">Apply this simulation as a step-by-step action plan in the Credit Builder Journey.</p>
+              <Link href="/journey" className="btn-primary text-sm w-full py-3 block">
+                Start Credit Builder Journey →
+              </Link>
+            </div>
 
             {/* Score Methodology */}
             <ScoreMethodology compact />

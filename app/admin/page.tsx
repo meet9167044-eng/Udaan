@@ -82,6 +82,22 @@ export default function AdminPage() {
               <p className="body-md text-slate-300">
                 Monitor borrower health, consent activity, data source status, and fraud alerts from a single control panel.
               </p>
+              {!loading && (
+                <div className="flex flex-wrap gap-3 mt-3">
+                  <span className="inline-flex items-center gap-1.5 text-xs text-slate-400 bg-white/[0.03] border border-white/[0.06] px-3 py-1.5 rounded-lg">
+                    <span className="w-1.5 h-1.5 rounded-full bg-green-400" />
+                    {borrowers.length} borrowers active
+                  </span>
+                  <span className="inline-flex items-center gap-1.5 text-xs text-slate-400 bg-white/[0.03] border border-white/[0.06] px-3 py-1.5 rounded-lg">
+                    <span className="w-1.5 h-1.5 rounded-full bg-red-400" />
+                    {highRiskCount} require review
+                  </span>
+                  <span className="inline-flex items-center gap-1.5 text-xs text-slate-400 bg-white/[0.03] border border-white/[0.06] px-3 py-1.5 rounded-lg">
+                    <span className="w-1.5 h-1.5 rounded-full bg-amber-400" />
+                    1 data source degraded
+                  </span>
+                </div>
+              )}
             </div>
             <div className="flex flex-col gap-3 items-end">
               <div className="rounded-2xl border border-white/10 bg-white/5 p-4 text-slate-300 text-right">

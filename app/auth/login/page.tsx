@@ -162,7 +162,13 @@ export default function LoginPage() {
 
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
           <h1 className="text-4xl sm:text-5xl font-display font-bold mb-3 tracking-tight">Role-Based Demo Login</h1>
-          <p className="text-slate-400 text-lg mb-10">Select a persona below to explore how UdaanScore serves different users.</p>
+          <p className="text-slate-400 text-lg mb-4">Select a persona below to explore how UdaanScore serves different users.</p>
+          <div className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-amber-500/10 border border-amber-500/20 mb-6">
+            <span className="text-amber-400 text-sm">&#9889;</span>
+            <p className="text-amber-300 text-xs font-medium">
+              <span className="font-bold">Quick Start:</span> Select <span className="text-white font-semibold">Borrower → Raju Sharma</span> for the full demo story
+            </p>
+          </div>
         </motion.div>
 
         {/* Role Buttons */}
@@ -290,9 +296,10 @@ export default function LoginPage() {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -10 }}
                 transition={{ duration: 0.4, delay: 0.2 }}
-                className="text-sm text-white/40 mt-3 font-medium"
+                className="inline-flex items-start gap-2 text-sm text-white/60 mt-4 font-medium bg-white/[0.05] border border-white/10 rounded-xl px-4 py-3"
               >
-                {roleOptions.find(o => o.value === role)?.afterLogin}
+                <span className="text-primary-400 shrink-0 mt-0.5">→</span>
+                {roleOptions.find(o => o.value === role)?.afterLogin.replace('→ ', '')}
               </motion.p>
             </AnimatePresence>
           </div>

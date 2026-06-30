@@ -149,10 +149,13 @@ export default function LenderDashboardPage() {
           <div>
             <p className="section-label">Lender Intelligence</p>
             <h1 className="heading-page text-white mt-1">
-              {session?.display ?? "Lender"} Dashboard
+              {session?.name ?? "Lender"} Dashboard
             </h1>
             <p className="text-caption mt-3">
               Portfolio overview · Fraud alerts · Risk-based borrower reports
+            </p>
+            <p className="text-slate-500 text-xs mt-1.5">
+              &#8594; Click any borrower row to load their full risk report. Use the <span className="text-amber-400">Fraud Alerts</span> tab to review high-risk profiles.
             </p>
           </div>
           <div className="flex gap-3 flex-wrap">
@@ -418,12 +421,16 @@ export default function LenderDashboardPage() {
                     <span className={`px-2.5 py-1 rounded-full text-xs font-semibold border ${getRiskBg(b.risk_band)}`}>
                       {b.risk_band}
                     </span>
-                    <button
-                      className="text-primary-400 hover:text-primary-300 text-xs font-medium mt-3 flex items-center gap-1 transition-colors"
-                      onClick={(e) => { e.stopPropagation(); loadReport(b.name); }}
-                    >
-                      Full Report →
-                    </button>
+                    <div className="flex items-center gap-2 mt-3">
+                      <button
+                        className="text-primary-400 hover:text-primary-300 text-xs font-medium flex items-center gap-1 transition-colors"
+                        onClick={(e) => { e.stopPropagation(); loadReport(b.name); }}
+                      >
+                        Full Report →
+                      </button>
+                      <span className="text-slate-600 text-xs">|</span>
+                      <span className="text-amber-400 text-xs font-medium">Investigate flagged signals</span>
+                    </div>
                   </div>
                 ))}
               {sorted.filter((b) => b.risk_band.includes("High") || b.trust_score < 600).length === 0 && (

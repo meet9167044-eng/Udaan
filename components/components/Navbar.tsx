@@ -125,10 +125,10 @@ export default function Navbar() {
                     className="w-8 h-8 rounded-full flex items-center justify-center text-white text-xs font-bold shrink-0"
                     style={{ background: `linear-gradient(135deg, ${roleColor}88, ${roleColor}44)`, border: `1px solid ${roleColor}55` }}
                   >
-                    {session.avatar}
+                    {session.name?.split(" ").map(w => w[0]).join("").slice(0, 2).toUpperCase()}
                   </div>
                   <div className="text-left">
-                    <p className="text-white text-xs font-semibold leading-none">{session.display}</p>
+                    <p className="text-white text-xs font-semibold leading-none">{session.name}</p>
                     <p className="text-xs mt-0.5" style={{ color: roleColor }}>{roleLabel}</p>
                   </div>
                   <svg
@@ -144,7 +144,7 @@ export default function Navbar() {
                   <div className="absolute right-0 top-full mt-2 w-52 glass border border-white/10 rounded-xl shadow-2xl overflow-hidden">
                     <div className="px-4 py-3 border-b border-white/[0.06]">
                       <p className="text-white text-xs font-semibold">{session.name}</p>
-                      <p className="text-slate-400 text-xs mt-0.5">{session.occupation} · {session.city}</p>
+                      <p className="text-slate-400 text-xs mt-0.5">{roleLabel}</p>
                     </div>
                     <div className="py-1">
                       <Link
@@ -245,10 +245,10 @@ export default function Navbar() {
                     className="w-9 h-9 rounded-full flex items-center justify-center text-white text-xs font-bold"
                     style={{ background: `linear-gradient(135deg, ${roleColor}88, ${roleColor}44)` }}
                   >
-                    {session.avatar}
+                    {session.name?.split(" ").map(w => w[0]).join("").slice(0, 2).toUpperCase()}
                   </div>
                   <div>
-                    <p className="text-white text-sm font-semibold">{session.display}</p>
+                    <p className="text-white text-sm font-semibold">{session.name}</p>
                     <p className="text-xs" style={{ color: roleColor }}>{roleLabel}</p>
                   </div>
                 </div>

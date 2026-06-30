@@ -159,7 +159,7 @@ export default function JourneyPage() {
               Build trust, <span className="gradient-text">unlock credit</span>
             </h1>
             <p className="body-md max-w-xl">
-              Complete guided actions to raise your Trust Score and unlock higher loan tiers — no bureau history required.
+              This is your personal credit-building roadmap. Complete tasks to raise your Trust Score and unlock higher loan tiers — no bureau history needed. Each action tells lenders a clear story about your financial reliability.
             </p>
           </div>
           <div className="flex gap-3 flex-wrap">
@@ -391,7 +391,7 @@ export default function JourneyPage() {
                         <div
                           className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 z-10 border-2 transition-all duration-300 ${
                             active
-                              ? "bg-primary-500 border-primary-300 text-white"
+                              ? "bg-primary-500 border-primary-300 text-white shadow-[0_0_16px_rgba(59,150,242,0.5)]"
                               : upcoming
                               ? "bg-primary-900/80 border-primary-600/50 text-primary-400"
                               : "bg-navy-800 border-white/10 text-slate-500"
@@ -409,10 +409,13 @@ export default function JourneyPage() {
                           <div className="flex flex-wrap items-center gap-2">
                             <p className="text-white font-semibold">{m.label}</p>
                             <span className="text-slate-500 text-xs">@ {m.score}</span>
-                            {active   && <span className="text-green-400 text-xs font-medium">Reached</span>}
+                            {active   && <span className="text-green-400 text-xs font-medium">&#10003; Reached</span>}
                             {!active && upcoming && <span className="text-primary-300 text-xs font-medium">On track</span>}
                           </div>
                           <p className="text-slate-400 text-sm mt-0.5">{m.reward}</p>
+                          {upcoming && !active && (
+                            <p className="text-primary-400 text-xs mt-1 font-semibold">{m.score - currentScore - earnedBoost} pts to go</p>
+                          )}
                         </div>
                       </div>
                     );
@@ -431,13 +434,16 @@ export default function JourneyPage() {
                 style={{ backgroundImage: "radial-gradient(circle at 30% 50%, #60b7f7 0%, transparent 50%), radial-gradient(circle at 70% 50%, #3b96f2 0%, transparent 50%)" }}
               />
               <div className="relative z-10">
-                <h3 className="heading-card text-white text-xl mb-3">Complete your next action today</h3>
+                <h3 className="heading-card text-white text-xl mb-3">Power up your financial profile</h3>
                 <p className="text-primary-200 text-sm mb-5 max-w-md mx-auto">
-                  Pay your next utility bill to move closer to the ₹50,000 unlock tier.
+                  Take the next step in your financial journey—every action brings you closer to your goal.
                 </p>
                 <Link href="/consent" className="btn-primary text-sm px-8 py-3 inline-block">
                   Link Accounts & Continue →
                 </Link>
+                <p className="text-primary-200/60 text-xs mt-4">
+                  Or <Link href="/dashboard" className="text-primary-300 underline underline-offset-2">go back to your Trust Dashboard</Link> to check your live score
+                </p>
               </div>
             </div>
           </div>

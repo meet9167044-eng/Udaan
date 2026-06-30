@@ -21,10 +21,10 @@ const activities = [
 ];
 
 const trustHealth = [
-  { label: "Data freshness",    value: "Live",       color: "#22c55e" },
-  { label: "Consent active",    value: "5 sources",  color: "#3b96f2" },
-  { label: "Alt. signals",      value: "14",         color: "#8b5cf6" },
-  { label: "AI Model",          value: "GBR v1.0",   color: "#f59e0b" },
+  { label: "Data freshness",    value: "Live",          color: "#22c55e" },
+  { label: "Consent active",    value: "5 sources",     color: "#3b96f2" },
+  { label: "Alt. signals",      value: "6 signals",     color: "#8b5cf6" },
+  { label: "Score Model",       value: "Weighted",      color: "#f59e0b" },
 ];
 
 export default function DashboardPage() {
@@ -155,11 +155,14 @@ export default function DashboardPage() {
             </div>
             <div className="text-center flex flex-col items-center">
               <p className="text-slate-400 text-xs font-semibold uppercase tracking-wider mb-2">Next Action</p>
-              <Link href="/journey" className="btn-primary text-xs px-4 py-2 inline-flex items-center gap-1.5">
-                <svg className="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-                View Roadmap
+              <Link
+                href="/journey"
+                className="btn-primary text-xs px-5 py-2.5 inline-flex items-center gap-1.5 shadow-[0_0_20px_rgba(37,120,230,0.3)]"
+              >
+                <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                Start Roadmap →
               </Link>
-              <p className="text-slate-500 text-[10px] mt-2">Complete tasks to unlock higher credit</p>
+              <p className="text-green-400 text-[10px] mt-2 font-semibold">+67 pts available to earn</p>
             </div>
           </div>
           {/* Score bar */}
@@ -366,6 +369,53 @@ export default function DashboardPage() {
 
             {/* Score Methodology — always visible */}
             <ScoreMethodology compact />
+
+            {/* How to Improve */}
+            {activeTab === "overview" && (
+              <div className="glass-card glass-card-static border border-green-500/20">
+                <div className="flex items-center gap-3 mb-5">
+                  <div className="w-8 h-8 rounded-xl bg-green-500/15 flex items-center justify-center">
+                    <svg className="w-4 h-4 text-green-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
+                    </svg>
+                  </div>
+                  <div>
+                    <h2 className="heading-card text-white text-sm">How to Improve Your Score</h2>
+                    <p className="text-slate-500 text-xs mt-0.5">3 quick wins available right now</p>
+                  </div>
+                </div>
+                <ul className="space-y-3">
+                  {[
+                    { action: "Pay your next 2 utility bills on time", impact: "+12 pts", icon: "⚡" },
+                    { action: "Keep ₹3,000+ balance for 30 days", impact: "+18 pts", icon: "🏦" },
+                    { action: "Complete the psychometric assessment", impact: "+22 pts", icon: "🧠" },
+                  ].map((tip) => (
+                    <li key={tip.action} className="flex items-center gap-3 p-3 rounded-xl bg-green-500/5 border border-green-500/10">
+                      <span className="text-xl">{tip.icon}</span>
+                      <p className="text-slate-300 text-sm flex-1">{tip.action}</p>
+                      <span className="text-green-400 text-xs font-bold shrink-0">{tip.impact}</span>
+                    </li>
+                  ))}
+                </ul>
+                <Link href="/journey" className="btn-primary text-sm w-full py-3 mt-5 text-center block">
+                  View Full Roadmap →
+                </Link>
+              </div>
+            )}
+
+            {/* Next Step Navigation Hint */}
+            <div className="glass rounded-xl p-5 border border-primary-500/20 flex items-center gap-4">
+              <div className="w-10 h-10 rounded-xl bg-primary-500/15 flex items-center justify-center shrink-0">
+                <svg className="w-5 h-5 text-primary-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                </svg>
+              </div>
+              <div className="flex-1">
+                <p className="text-white text-sm font-semibold">Next: Manage your data sources</p>
+                <p className="text-slate-400 text-xs mt-0.5">Connect more sources in the Consent Vault to unlock a higher Trust Score.</p>
+              </div>
+              <Link href="/consent" className="btn-outline text-xs py-2 px-4 shrink-0">Consent Vault →</Link>
+            </div>
           </div>
         </div>
       </div>

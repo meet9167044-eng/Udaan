@@ -192,7 +192,7 @@ export default function LandingPage() {
           </h1>
 
           <p className="body-lg max-w-2xl mx-auto mb-12">
-            AI-powered alternative credit scoring that empowers <strong>Borrowers</strong> to build trust, helps <strong>Lenders</strong> deploy capital safely, and gives <strong>Admins</strong> full platform visibility.
+            UdaanScore gives India&apos;s 190M thin-file borrowers a real credit identity — built from UPI, utility bills, and cash flow, not just bureau history. Borrowers build trust, Lenders deploy capital safely, Admins get full visibility.
           </p>
 
           <div className="flex flex-col sm:flex-row gap-5 justify-center mb-12 md:mb-16">
@@ -276,13 +276,7 @@ export default function LandingPage() {
           </div>
         </div>
 
-        {/* Scroll indicator */}
-        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 opacity-60">
-          <span className="text-xs text-slate-400">Scroll to explore</span>
-          <div className="w-5 h-8 rounded-full border border-white/20 flex items-start justify-center pt-1.5">
-            <div className="w-1 h-2 rounded-full bg-white/50 animate-bounce" />
-          </div>
-        </div>
+
       </section>
 
       {/* ── Stats strip ───────────────────────────────────── */}

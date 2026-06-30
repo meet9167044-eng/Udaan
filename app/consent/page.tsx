@@ -221,6 +221,20 @@ export default function ConsentVaultPage() {
       )}
 
       <div className="page-container pt-8 md:pt-12">
+
+        {/* Top impact banner */}
+        <div className="glass rounded-xl p-4 border border-primary-500/25 mb-8 flex items-center gap-4">
+          <div className="w-10 h-10 rounded-xl bg-primary-500/15 flex items-center justify-center shrink-0">
+            <svg className="w-5 h-5 text-primary-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+            </svg>
+          </div>
+          <p className="text-slate-300 text-sm leading-relaxed flex-1">
+            <span className="text-white font-semibold">Your consent directly affects your Trust Score and loan eligibility.</span>{" "}
+            Each connected data source adds up to <span className="text-green-400 font-semibold">120 pts</span> to your score and can unlock loan access from &#8377;5K to &#8377;1L.
+          </p>
+        </div>
+
         <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-8 mb-10">
           <div className="max-w-lg">
             <div className="flex items-center gap-3 mb-3">
@@ -499,6 +513,13 @@ export default function ConsentVaultPage() {
                 UdaanScore is fully compliant with India&apos;s Digital Personal Data Protection Act.
                 We never sell your data or share it without your explicit consent.
               </p>
+            </div>
+
+            {/* Next Step CTA */}
+            <div className="glass-card glass-card-static border border-primary-500/25 text-center">
+              <p className="text-white font-semibold text-sm mb-1">See how your signals affect your score</p>
+              <p className="text-slate-400 text-xs mb-4">Use the Simulator to model any financial action before you take it.</p>
+              <a href="/simulator" className="btn-primary text-sm w-full py-3 block">Open Trust Score Simulator →</a>
             </div>
           </div>
         </div>
