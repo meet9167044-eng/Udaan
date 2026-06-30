@@ -13,10 +13,10 @@ const borrowerProfiles = [
   "Sunita Verma",
 ];
 
-const roleOptions: { value: UserRole; label: string; description: string; icon: string }[] = [
-  { value: "borrower", label: "Borrower", description: "Build your Trust Score, unlock nano-loans, and grow your business.", icon: "👤" },
-  { value: "lender", label: "Lender", description: "Access verified alternate-data profiles and deploy capital safely.", icon: "🏦" },
-  { value: "admin",   label: "Admin",   description: "Monitor system health, default rates, and platform governance.", icon: "🛡️" },
+const roleOptions: { value: UserRole; label: string; description: string; icon: string; afterLogin: string }[] = [
+  { value: "borrower", label: "Borrower", description: "Build your Trust Score, unlock nano-loans, and grow your business.", icon: "👤", afterLogin: "→ Trust Dashboard with score, signals, and loan offers" },
+  { value: "lender",   label: "Lender",   description: "Access verified alternate-data profiles and deploy capital safely.", icon: "🏦", afterLogin: "→ Borrower portfolio with risk reports and fraud alerts" },
+  { value: "admin",    label: "Admin",    description: "Monitor system health, default rates, and platform governance.", icon: "🛡️", afterLogin: "→ Admin console with metrics, alerts, and data source health" },
 ];
 
 /* ── Dynamic Visuals ─────────────────────────────────────────── */
@@ -161,7 +161,8 @@ export default function LoginPage() {
         </div>
 
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
-          <h1 className="text-4xl sm:text-5xl font-display font-bold mb-10 tracking-tight">Welcome back</h1>
+          <h1 className="text-4xl sm:text-5xl font-display font-bold mb-3 tracking-tight">Role-Based Demo Login</h1>
+          <p className="text-slate-400 text-lg mb-10">Select a persona below to explore how UdaanScore serves different users.</p>
         </motion.div>
 
         {/* Role Buttons */}
@@ -280,6 +281,18 @@ export default function LoginPage() {
                 className="text-lg text-white/60 leading-relaxed"
               >
                 {roleOptions.find(o => o.value === role)?.description}
+              </motion.p>
+            </AnimatePresence>
+            <AnimatePresence mode="wait">
+              <motion.p
+                key={role + 'after'}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                transition={{ duration: 0.4, delay: 0.2 }}
+                className="text-sm text-white/40 mt-3 font-medium"
+              >
+                {roleOptions.find(o => o.value === role)?.afterLogin}
               </motion.p>
             </AnimatePresence>
           </div>

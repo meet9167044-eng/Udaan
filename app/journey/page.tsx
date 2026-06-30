@@ -88,10 +88,9 @@ function statusLabel(status: TaskStatus) {
 export default function JourneyPage() {
   const [tasks, setTasks]               = useState(roadmapTasks);
   const [showPsycho, setShowPsycho]     = useState(false);
-  const [rajuMode, setRajuMode]         = useState(true);
   const [psychoBoost, setPsychoBoost]   = useState(0);
 
-  const currentScore = rajuMode ? BASE_SCORE : 742;
+  const currentScore = BASE_SCORE;
 
   const journeyProgress = useMemo(() => {
     const total = tasks.reduce((sum, t) => sum + t.progress, 0);
@@ -164,22 +163,32 @@ export default function JourneyPage() {
             </p>
           </div>
           <div className="flex gap-3 flex-wrap">
-            <button
-              onClick={() => setRajuMode(!rajuMode)}
-              className={`text-sm py-2.5 px-5 rounded-xl border font-medium transition-all duration-300 ${
-                rajuMode
-                  ? "border-amber-500/40 bg-amber-500/10 text-amber-300"
-                  : "border-white/10 bg-white/[0.02] text-slate-400 hover:text-white"
-              }`}
-            >
-              {rajuMode ? "Raju's View" : "Switch to Raju"}
-            </button>
             <Link href="/simulator" className="btn-outline text-sm py-2.5 px-5">
               Simulate Impact
             </Link>
             <Link href="/dashboard" className="btn-primary text-sm py-2.5 px-5">
               Trust Dashboard
             </Link>
+          </div>
+        </div>
+
+        {/* ── Persona Context Banner ───────────────────────────── */}
+        <div className="glass rounded-xl p-5 border border-amber-500/20 mb-10 flex items-start gap-4">
+          <div className="w-10 h-10 rounded-full bg-amber-500/15 border border-amber-500/30 flex items-center justify-center shrink-0">
+            <span className="text-amber-400 text-xl">🏪</span>
+          </div>
+          <div className="flex-1 min-w-0">
+            <p className="text-amber-300 font-semibold text-sm">Raju Sharma — Kirana Store Owner, Mumbai</p>
+            <p className="text-slate-400 text-xs mt-1 leading-relaxed">
+              This journey roadmap shows the recommended credit-building path for Raju, a first-time borrower with no bureau history.
+              Trust Score: <span className="text-white font-semibold">{currentScore}</span> • 
+              Monthly Income: <span className="text-white font-semibold">₹22,000</span> •
+              Profile: <span className="text-white font-semibold">Thin-file, MSME</span>
+            </p>
+          </div>
+          <div className="shrink-0 text-right">
+            <p className="text-xs text-slate-500">Score Range</p>
+            <p className="text-amber-400 font-bold text-sm">500–800</p>
           </div>
         </div>
 
@@ -190,14 +199,9 @@ export default function JourneyPage() {
             <div className="glass-card glass-card-static flex flex-col items-center relative overflow-hidden">
               <div className="absolute top-0 right-0 w-28 h-28 bg-purple-500/8 blur-3xl pointer-events-none" />
               <p className="text-caption uppercase tracking-widest mb-2 w-full text-center relative z-10">
-                {rajuMode ? "Raju's Trust Score" : "Current Trust Score"}
+                Trust Score
               </p>
-              <p className="text-slate-600 text-[10px] mb-3 text-center">GradientBoostingRegressor</p>
-              {rajuMode && (
-                <div className="mb-3 px-3 py-1.5 rounded-full bg-amber-500/10 border border-amber-500/30 relative z-10">
-                  <p className="text-amber-300 text-xs font-medium">Kirana Store Owner · Mumbai</p>
-                </div>
-              )}
+              <p className="text-slate-600 text-[10px] mb-3 text-center">Alternative Data Score · 6 signals</p>
               <div className="relative z-10">
                 <ScoreGauge score={currentScore} maxScore={1000} minScore={0} size={200} animated={false} />
               </div>
@@ -251,14 +255,49 @@ export default function JourneyPage() {
 
           {/* ── Right column ─────────────────────────────── */}
           <div className="lg:col-span-2 stack-xl">
-            {/* Roadmap */}
+            {/* ── Roadmap with Next Best Action ───────────────── */}
             <div>
-              <div className="flex items-center justify-between mb-8">
+              <div className="flex items-center justify-between mb-6">
                 <h2 className="heading-card text-white text-lg">Your Roadmap</h2>
                 <span className="text-slate-400 text-xs">
                   {tasks.filter((t) => t.status === "completed").length} of {tasks.length} complete
                 </span>
               </div>
+
+              {/* Next Best Action card */}
+              {tasks.find(t => t.status !== "completed") && (() => {
+                const nextTask = tasks.find(t => t.status === "in_progress") || tasks.find(t => t.status === "pending");
+                if (!nextTask) return null;
+                return (
+                  <div className="glass-card glass-card-static border border-primary-500/30 mb-6 relative overflow-hidden">
+                    <div className="absolute top-0 right-0 w-32 h-32 bg-primary-500/8 blur-3xl pointer-events-none" />
+                    <div className="flex items-center gap-2 mb-3 relative z-10">
+                      <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
+                      <span className="text-green-400 text-xs font-bold uppercase tracking-wider">Next Best Action</span>
+                    </div>
+                    <div className="flex items-start gap-4 relative z-10">
+                      <div className="w-12 h-12 rounded-2xl flex items-center justify-center shrink-0"
+                        style={{ background: `${nextTask.color}22`, border: `1px solid ${nextTask.color}44`, color: nextTask.color }}>
+                        {nextTask.icon}
+                      </div>
+                      <div className="flex-1">
+                        <p className="text-white font-semibold">{nextTask.title}</p>
+                        <p className="text-slate-400 text-sm mt-1">{nextTask.description}</p>
+                        <div className="flex items-center gap-3 mt-3">
+                          <span className="text-green-400 text-xs font-bold">+{nextTask.scoreBoost} pts potential</span>
+                          <span className="text-slate-500 text-xs">• {nextTask.dueLabel}</span>
+                        </div>
+                      </div>
+                      <button
+                        onClick={() => nextTask.isPsychometric ? setShowPsycho(true) : toggleTaskProgress(nextTask.id)}
+                        className="btn-primary text-xs py-2 px-4 shrink-0"
+                      >
+                        {nextTask.isPsychometric ? "🧠 Start Quiz" : "Mark Progress"}
+                      </button>
+                    </div>
+                  </div>
+                );
+              })()}
               <div className="space-y-4">
                 {tasks.map((task, i) => {
                   const badge  = statusLabel(task.status);

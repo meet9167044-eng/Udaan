@@ -10,10 +10,11 @@ interface CreditFactorCardProps {
   trend: "up" | "down" | "stable";
   trendText: string;
   color: string;
+  why?: string;
 }
 
 export default function CreditFactorCard({
-  icon, label, value, percentage, trend, trendText, color,
+  icon, label, value, percentage, trend, trendText, color, why
 }: CreditFactorCardProps) {
   const trendColor =
     trend === "up"     ? "text-green-400" :
@@ -27,7 +28,7 @@ export default function CreditFactorCard({
     <motion.div 
       whileHover={{ scale: 1.02, boxShadow: `0 8px 30px ${color}15`, borderColor: `${color}30` }}
       transition={{ type: "spring", stiffness: 300, damping: 20 }}
-      className="glass-card flex flex-col gap-5 cursor-default"
+      className="glass-card flex flex-col gap-4 cursor-default"
     >
       <div className="flex items-start justify-between gap-4">
         <div className="flex items-center gap-4 min-w-0">
@@ -47,7 +48,7 @@ export default function CreditFactorCard({
         </span>
       </div>
 
-      <div className="space-y-2">
+      <div className="space-y-2 mt-1">
         <div className="flex justify-between text-caption">
           <span>Trust contribution</span>
           <span className="text-slate-300 font-medium tabular-nums">{percentage}%</span>
@@ -64,6 +65,15 @@ export default function CreditFactorCard({
           />
         </div>
       </div>
+      
+      {why && (
+        <div className="mt-1 pt-3 border-t border-white/[0.06]">
+          <p className="text-[11px] leading-relaxed text-slate-400">
+            <span className="font-semibold text-slate-300">Why this matters: </span>
+            {why}
+          </p>
+        </div>
+      )}
     </motion.div>
   );
 }

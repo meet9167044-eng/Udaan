@@ -77,7 +77,7 @@ def calculate_trust_score(bills: float, upi: float, cashflow: float,
                 "version": ml["model_version"],
                 "engine":  ml["engine"],
                 "trained_on": "6,000 synthetic borrower profiles",
-                "note":    "GradientBoostingRegressor - alternative data scorer. Hackathon prototype.",
+                "note":    "Alternative Data Scorer. Hackathon prototype.",
                 "signals": ["bills", "upi", "cashflow", "savings", "location", "quiz"],
             },
         }

@@ -104,7 +104,7 @@ def train_and_save() -> dict:
 
     card = {
         "model_name":   "UdaanScore Trust Scorer",
-        "model_type":   "GradientBoostingRegressor (scikit-learn)",
+        "model_type":   "Alternative Data Scorer (scikit-learn)",
         "version":      "1.0.0",
         "features":     FEATURE_NAMES,
         "training_samples": 4800,
@@ -174,7 +174,7 @@ def ml_predict(bills: float, upi: float, cashflow: float,
         "ml_score":            score,
         "feature_importances": importance_pct,
         "signal_contributions": contributions,
-        "model_type":          "GradientBoostingRegressor",
+        "model_type":          "Alternative Data Scorer",
         "model_version":       "1.0.0",
         "engine":              "scikit-learn",
     }

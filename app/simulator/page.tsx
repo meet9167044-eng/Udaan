@@ -4,6 +4,7 @@ import { useState, useMemo, useEffect, useRef, useCallback } from "react";
 import ScoreGauge from "@/components/ScoreGauge";
 import Link from "next/link";
 import { calculateServerScore, type ScoreResult } from "@/lib/api";
+import ScoreMethodology from "@/components/ScoreMethodology";
 
 /* ── Factor definitions ──────────────────────────────────────────────────── */
 interface Factor {
@@ -52,6 +53,50 @@ const SIGNAL_COLORS: Record<string, string> = {
   bills: "#22c55e", upi: "#3b96f2", cashflow: "#f59e0b",
   savings: "#a78bfa", location: "#06b6d4", quiz: "#f97316",
 };
+
+/* ── Scenario Actions ───────────────────────────────────────────── */
+const scenarios = [
+  {
+    id: "ideal_borrower",
+    label: "Ideal Borrower",
+    emoji: "⭐",
+    description: "All signals at excellent levels",
+    color: "#22c55e",
+    values: { utilityBills: 95, upiActivity: 92, savingsConsistency: 90, cashFlowStability: 93, gstCompliance: 95 },
+  },
+  {
+    id: "pay_bills",
+    label: "Start Paying Bills",
+    emoji: "⚡",
+    description: "Boost bill consistency to 90%",
+    color: "#3b96f2",
+    values: { utilityBills: 90, upiActivity: 75, savingsConsistency: 69, cashFlowStability: 72, gstCompliance: 78 },
+  },
+  {
+    id: "increase_savings",
+    label: "Build Savings Buffer",
+    emoji: "💰",
+    description: "Raise savings rate and UPI activity",
+    color: "#a78bfa",
+    values: { utilityBills: 78, upiActivity: 80, savingsConsistency: 88, cashFlowStability: 72, gstCompliance: 78 },
+  },
+  {
+    id: "steady_cashflow",
+    label: "Stable Cash Flow",
+    emoji: "📈",
+    description: "Consistent monthly income pattern",
+    color: "#f59e0b",
+    values: { utilityBills: 78, upiActivity: 75, savingsConsistency: 69, cashFlowStability: 93, gstCompliance: 78 },
+  },
+  {
+    id: "low_profile",
+    label: "At-Risk Profile",
+    emoji: "⚠️",
+    description: "Low signals — needs improvement",
+    color: "#ef4444",
+    values: { utilityBills: 35, upiActivity: 30, savingsConsistency: 25, cashFlowStability: 40, gstCompliance: 30 },
+  },
+];
 
 /* ── Pure helpers ─────────────────────────────────────────────────────────── */
 function factorPct(v: number, f: Factor) { return (v - f.min) / (f.max - f.min); }
@@ -266,7 +311,7 @@ export default function SimulatorPage() {
         <div className="text-center mb-10 max-w-2xl mx-auto animate-fade-in">
           <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full glass border border-primary-500/25 text-xs font-semibold text-primary-300 mb-5">
             <span className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse" />
-            Powered by GradientBoostingRegressor · scikit-learn
+            Alternative Data Score · 6 Behavioral Signals
           </div>
           <p className="section-label">Trust Score Simulator</p>
           <h1 className="heading-page text-white mt-2 mb-5">
@@ -276,6 +321,30 @@ export default function SimulatorPage() {
             Adjust alternate-data signals to see how UPI, utilities, savings, cash flow, and GST
             shape your AI Trust Score — before you apply.
           </p>
+        </div>
+
+        {/* ── Scenario Action Cards ────────────────────────────────── */}
+        <div className="mb-8">
+          <div className="flex items-center gap-3 mb-4">
+            <h2 className="text-white font-semibold text-sm">Quick Scenarios</h2>
+            <span className="text-slate-500 text-xs">Click to pre-fill signal values and see the impact</span>
+          </div>
+          <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
+            {scenarios.map((s) => (
+              <button
+                key={s.id}
+                id={`scenario-${s.id}`}
+                onClick={() => { setValues(s.values); setServerResult(null); }}
+                className="glass rounded-xl p-4 text-left hover:border-white/20 border border-white/[0.06] transition-all duration-200 hover:-translate-y-0.5 group"
+              >
+                <div className="text-2xl mb-2">{s.emoji}</div>
+                <p className="text-white text-xs font-semibold leading-tight mb-1">{s.label}</p>
+                <p className="text-slate-500 text-[10px] leading-tight">{s.description}</p>
+                <div className="mt-2 h-0.5 rounded-full transition-all duration-300 group-hover:opacity-100 opacity-0"
+                  style={{ background: s.color }} />
+              </button>
+            ))}
+          </div>
         </div>
 
         {/* ── Score impact banner ─────────────────────────────────── */}
@@ -557,6 +626,9 @@ export default function SimulatorPage() {
             <Link href="/dashboard" className="btn-primary text-sm w-full py-3 text-center block">
               View Trust Dashboard →
             </Link>
+
+            {/* Score Methodology */}
+            <ScoreMethodology compact />
           </div>
         </div>
       </div>

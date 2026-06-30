@@ -19,13 +19,15 @@ interface ConsentState {
 /* ── Static source metadata (icons + labels) ──────────────── */
 const SOURCE_META: Record<
   keyof Omit<ConsentState, "borrower_name" | "consented_at">,
-  { label: string; description: string; dataPoints: string[]; institution: string; icon: React.ReactNode }
+  { label: string; description: string; dataPoints: string[]; institution: string; icon: React.ReactNode; impact: "High" | "Medium" | "Low"; impactPts: number }
 > = {
   bank_data: {
     label: "HDFC Bank",
     institution: "Bank Account",
     description: "Account statements, transactions, EMI status",
     dataPoints: ["Balance", "Transactions", "EMI status", "Savings avg."],
+    impact: "High",
+    impactPts: 120,
     icon: (
       <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
         <rect x="3" y="3" width="18" height="18" rx="2" /><path d="M3 9h18M9 21V9" />
@@ -37,6 +39,8 @@ const SOURCE_META: Record<
     institution: "UPI Network",
     description: "UPI transaction patterns, merchant payments",
     dataPoints: ["P2P transfers", "Merchant payments", "Velocity"],
+    impact: "High",
+    impactPts: 110,
     icon: (
       <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
         <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
@@ -48,6 +52,8 @@ const SOURCE_META: Record<
     institution: "Utility Bills",
     description: "Bill payment history, recharge patterns",
     dataPoints: ["Bill payments", "Plan history", "Usage patterns"],
+    impact: "High",
+    impactPts: 100,
     icon: (
       <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
         <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
@@ -59,6 +65,8 @@ const SOURCE_META: Record<
     institution: "Business Tax",
     description: "Business income, GST filings, turnover",
     dataPoints: ["GST returns", "Turnover", "Tax compliance"],
+    impact: "Medium",
+    impactPts: 70,
     icon: (
       <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
         <path d="M20 7H4a2 2 0 00-2 2v6a2 2 0 002 2h16a2 2 0 002-2V9a2 2 0 00-2-2z" />
@@ -71,6 +79,8 @@ const SOURCE_META: Record<
     institution: "Location Signals",
     description: "Residential stability, geo-pattern analysis",
     dataPoints: ["Home location", "Stability score", "Movement history"],
+    impact: "Medium",
+    impactPts: 60,
     icon: (
       <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
         <path d="M12 2a7 7 0 017 7c0 5-7 13-7 13S5 14 5 9a7 7 0 017-7z" />
@@ -83,6 +93,8 @@ const SOURCE_META: Record<
     institution: "Behavioral Assessment",
     description: "Financial behavior quiz and risk profile",
     dataPoints: ["Risk attitude", "Financial discipline", "Quiz score"],
+    impact: "Medium",
+    impactPts: 80,
     icon: (
       <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
         <circle cx="12" cy="12" r="10" /><path d="M12 8v4l3 3" />
@@ -241,7 +253,7 @@ export default function ConsentVaultPage() {
         </div>
 
         {/* Security badges */}
-        <div className="flex flex-wrap gap-3 mb-12">
+        <div className="flex flex-wrap gap-3 mb-8">
           {[
             { icon: "🔒", label: "256-bit AES Encrypted" },
             { icon: "🛡", label: "RBI DPDP Compliant" },
@@ -253,6 +265,34 @@ export default function ConsentVaultPage() {
               <span className="text-slate-300 font-medium text-xs">{badge.label}</span>
             </div>
           ))}
+        </div>
+
+        {/* ── Score Impact Legend ─────────────────────────────────── */}
+        <div className="glass-card glass-card-static border border-amber-500/20 mb-10">
+          <div className="flex items-center gap-3 mb-4">
+            <div className="w-7 h-7 rounded-lg bg-amber-500/15 flex items-center justify-center">
+              <svg className="w-4 h-4 text-amber-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+              </svg>
+            </div>
+            <div>
+              <h2 className="text-white font-semibold text-sm">Score Impact Legend</h2>
+              <p className="text-slate-500 text-xs mt-0.5">How each data source affects your Trust Score</p>
+            </div>
+          </div>
+          <div className="grid grid-cols-3 gap-4">
+            {[
+              { level: "High", pts: "100–120 pts", color: "#22c55e", bg: "bg-green-500/10", border: "border-green-500/20", desc: "Core signals — bank, UPI, bills" },
+              { level: "Medium", pts: "60–80 pts", color: "#f59e0b", bg: "bg-amber-500/10", border: "border-amber-500/20", desc: "Supporting signals — GST, location, quiz" },
+              { level: "Low", pts: "<40 pts", color: "#6b7280", bg: "bg-white/5", border: "border-white/10", desc: "Optional enrichment data" },
+            ].map((tier) => (
+              <div key={tier.level} className={`p-3 rounded-xl ${tier.bg} border ${tier.border}`}>
+                <p className="font-bold text-sm" style={{ color: tier.color }}>{tier.level}</p>
+                <p className="text-white text-xs font-semibold mt-1">{tier.pts}</p>
+                <p className="text-slate-500 text-[10px] mt-1 leading-tight">{tier.desc}</p>
+              </div>
+            ))}
+          </div>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-10">
@@ -338,11 +378,20 @@ export default function ConsentVaultPage() {
                         ))}
                       </div>
 
-                      <div className="mt-4 pt-4 border-t border-white/[0.05]">
+                      <div className="mt-4 pt-4 border-t border-white/[0.05] flex items-center justify-between">
                         <span
                           className={`text-xs font-semibold ${isOn ? "text-green-400" : "text-slate-500"}`}
                         >
                           {isOn ? "● Sharing active" : "○ Sharing paused"}
+                        </span>
+                        <span
+                          className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
+                            meta.impact === "High" ? "bg-green-500/10 text-green-400" :
+                            meta.impact === "Medium" ? "bg-amber-500/10 text-amber-400" :
+                            "bg-white/5 text-slate-500"
+                          }`}
+                        >
+                          {meta.impact} impact · ~{meta.impactPts}pts
                         </span>
                       </div>
                     </div>
@@ -412,6 +461,30 @@ export default function ConsentVaultPage() {
               <button id="data-rights-request" className="btn-primary text-sm w-full py-3 mt-6 shadow-[0_0_20px_rgba(37,120,230,0.15)]">
                 Submit a Data Request
               </button>
+            </div>
+
+            {/* What happens if I revoke? */}
+            <div className="glass rounded-xl p-5 border border-red-500/20">
+              <div className="flex items-center gap-2 mb-3">
+                <svg className="w-4 h-4 text-red-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>
+                </svg>
+                <span className="text-red-400 text-xs font-semibold">What happens if I revoke?</span>
+              </div>
+              <ul className="space-y-2">
+                <li className="text-slate-400 text-xs leading-relaxed flex items-start gap-2">
+                  <span className="text-red-400 mt-0.5">•</span>
+                  Revoking <span className="text-white font-medium">High Impact</span> sources (bank, UPI, bills) can lower your Trust Score by <span className="text-red-400 font-semibold">100–120 pts</span>
+                </li>
+                <li className="text-slate-400 text-xs leading-relaxed flex items-start gap-2">
+                  <span className="text-amber-400 mt-0.5">•</span>
+                  Revoking all data may reduce loan eligibility from <span className="text-white font-medium">₹50K to ₹5K</span>
+                </li>
+                <li className="text-slate-400 text-xs leading-relaxed flex items-start gap-2">
+                  <span className="text-green-400 mt-0.5">•</span>
+                  You can re-grant consent anytime — score rebuilds within 30 days
+                </li>
+              </ul>
             </div>
 
             {/* DPDP Notice */}

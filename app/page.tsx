@@ -42,8 +42,8 @@ const features = [
 const flowSteps = [
   {
     num: "01",
-    title: "User Consent",
-    desc: "Users securely grant permission to access alternative financial data.",
+    title: "Grant Consent",
+    desc: "Securely grant permission to access alternative financial data like UPI, utility bills, and GST.",
     href: "/consent",
     icon: (
       <svg className="w-7 h-7 text-primary-100" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -54,8 +54,8 @@ const flowSteps = [
   },
   {
     num: "02",
-    title: "Alternate Data Collection",
-    desc: "UPI transactions, utility payments, GST records and cash-flow signals are analyzed.",
+    title: "Analyze Alternative Signals",
+    desc: "Behavioral and financial signals are analyzed in real-time, completely invisible to legacy bureaus.",
     href: "/dashboard",
     icon: (
       <svg className="w-7 h-7 text-primary-100" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -68,25 +68,13 @@ const flowSteps = [
   },
   {
     num: "03",
-    title: "AI Trust Score",
-    desc: "Behavioral and financial signals are converted into a transparent Trust Score.",
+    title: "Get Transparent Trust Score & Loan Eligibility",
+    desc: "Your data is converted into an explainable Trust Score, instantly unlocking pre-approved nano loans.",
     href: "/simulator",
     icon: (
       <svg className="w-7 h-7 text-primary-100" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
         <path d="M12 20c4.418 0 8-3.582 8-8s-3.582-8-8-8-8 3.582-8 8 3.582 8 8 8z" />
         <path d="M8 12h1.5m5 0H16M12 8v1.5M12 14V16" />
-      </svg>
-    ),
-  },
-  {
-    num: "04",
-    title: "Loan Approval",
-    desc: "Partner lenders use the Trust Score for fair and inclusive credit decisions.",
-    href: "/journey",
-    icon: (
-      <svg className="w-7 h-7 text-primary-100" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-        <path d="M9 12l2 2 4-4" />
-        <path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z" />
       </svg>
     ),
   },
@@ -124,9 +112,9 @@ function FloatingCard() {
 }
 
 const marketStats = [
-  { value: "190M+", label: "Thin-file borrowers", sub: "Underserved by traditional credit" },
-  { value: "63M+",  label: "MSMEs unserved",      sub: "Lack formal credit history" },
-  { value: "₹20L Cr", label: "Credit gap",        sub: "Unmet demand across India" },
+  { value: "3.2x", label: "Higher Approval Rates", sub: "For thin-file borrowers" },
+  { value: "48 hrs",  label: "Faster Loan Access",      sub: "Instant assessment" },
+  { value: "6+", label: "Alternative Data Signals",        sub: "More comprehensive profile" },
 ];
 
 export default function LandingPage() {
@@ -204,17 +192,66 @@ export default function LandingPage() {
           </h1>
 
           <p className="body-lg max-w-2xl mx-auto mb-12">
-            AI-powered alternative credit scoring using UPI behavior, utility payments, GST compliance,
-            and cash-flow stability.
+            AI-powered alternative credit scoring that empowers <strong>Borrowers</strong> to build trust, helps <strong>Lenders</strong> deploy capital safely, and gives <strong>Admins</strong> full platform visibility.
           </p>
 
-          <div className="flex flex-col sm:flex-row gap-5 justify-center mb-16 md:mb-20">
+          <div className="flex flex-col sm:flex-row gap-5 justify-center mb-12 md:mb-16">
             <Link href="/auth/login" id="hero-cta-primary" className="btn-primary text-lg px-10 py-4 font-bold tracking-tight shadow-[0_0_40px_rgba(37,120,230,0.4)]">
-              Get Started with Login →
+              Get Started →
             </Link>
             <Link href="/auth/login" id="hero-cta-secondary" className="btn-outline text-lg px-10 py-4 font-bold tracking-tight bg-white/[0.03]">
               Explore as role-based user
             </Link>
+          </div>
+
+          {/* Role-based CTA cards */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 max-w-4xl mx-auto mb-12 text-left">
+            {[
+              {
+                icon: "👤",
+                role: "Borrower",
+                headline: "Build score and unlock nano loans",
+                benefit: "Access nano loans from ₹5K to ₹1L without a CIBIL score. Track your score, simulate actions, complete tasks.",
+                color: "#3b96f2",
+                href: "/auth/login",
+                cta: "Start Building Credit",
+              },
+              {
+                icon: "🏦",
+                role: "Lender",
+                headline: "Assess risk with alternative data",
+                benefit: "Assess risk with 6 alternative data signals. Get pre-underwritten borrower profiles with explainable scores.",
+                color: "#22c55e",
+                href: "/auth/login",
+                cta: "View Borrower Portfolio",
+              },
+              {
+                icon: "🛡️",
+                role: "Admin",
+                headline: "Monitor platform health and consent controls",
+                benefit: "Track consent activity, data source uptime, fraud alerts, and risk distribution across the entire portfolio.",
+                color: "#a78bfa",
+                href: "/auth/login",
+                cta: "Open Admin Console",
+              },
+            ].map((card) => (
+              <Link
+                key={card.role}
+                href={card.href}
+                id={`hero-role-${card.role.toLowerCase()}`}
+                className="glass rounded-2xl p-6 border border-white/[0.07] hover:border-white/20 transition-all duration-300 hover:-translate-y-1 group block"
+              >
+                <div className="flex items-center gap-2 mb-3">
+                  <span className="text-2xl">{card.icon}</span>
+                  <span className="text-xs font-bold uppercase tracking-wider" style={{ color: card.color }}>{card.role}</span>
+                </div>
+                <p className="text-white font-semibold mb-2">{card.headline}</p>
+                <p className="text-slate-400 text-sm leading-relaxed mb-4">{card.benefit}</p>
+                <span className="text-xs font-semibold flex items-center gap-1 transition-colors" style={{ color: card.color }}>
+                  {card.cta} →
+                </span>
+              </Link>
+            ))}
           </div>
 
           {/* Floating cards */}
@@ -285,7 +322,7 @@ export default function LandingPage() {
         </div>
 
         <div className="page-container relative z-10 mt-12">
-          <div className="grid grid-cols-1 gap-6 lg:grid-cols-[repeat(7,minmax(0,1fr))] items-center">
+          <div className="grid grid-cols-1 gap-6 lg:grid-cols-[repeat(5,minmax(0,1fr))] items-center">
             {flowSteps.map((step, index) => (
               <Fragment key={step.num}>
                 <Link
